@@ -12,9 +12,9 @@ const Initiative = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Staff",
   },
-  department: {
+  type: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Department",
+    ref: "Type",
   },
   qualityStageGate: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,6 +32,14 @@ const Initiative = new mongoose.Schema({
     type: String,
   },
   session: {
+    type: Date,
+    default: Date.now()
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  createdAt: {
     type: Date,
     default: Date.now()
   },

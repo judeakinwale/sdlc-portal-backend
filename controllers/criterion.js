@@ -29,7 +29,7 @@ const getAllCriteria = async (req, res) => {
     const criterion = await Criterion.find().populate('items')
 
     if (!criterion || criterion.length < 1) {
-      return new ErrorResponseJSON(res, "Criterions not found!", 404)
+      return new ErrorResponseJSON(res, "Criteria not found!", 404)
     }
     res.status(200).json({
       success: true,
