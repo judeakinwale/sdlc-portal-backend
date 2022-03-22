@@ -5,9 +5,13 @@ const morgan = require("morgan");
 const colors = require("colors");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
+const errorHandler = require("./middleware/error");
 const rateLimit = require("express-rate-limit");
 const express = require("express");
 const connectDB = require("./config/db");
+
+// //load env vars
+// dotenv.config({ path: "./config/.env" });
 
 // import routes
 // TODO: Add Routes
@@ -60,6 +64,8 @@ app.use("/api/v1/initiative", initiative)
 app.use("/api/v1/item", item)
 app.use("/api/v1/prefix", prefix)
 app.use("/api/v1/type", type)
+
+app.use(errorHandler);
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');

@@ -6,7 +6,7 @@ const {
   updateGate,
   deleteGate
 } = require("../controllers/gate")
-const { verifyToken } = require("../middlewares/auth")
+const { verifyToken } = require("../middleware/auth")
 
 router.post("/", verifyToken, createGate); // create a gate
 router.get("/", getAllGates); // get all gates

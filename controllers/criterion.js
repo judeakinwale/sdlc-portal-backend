@@ -23,21 +23,25 @@ const createCriterion = async (req, res) => {
   }
 }
 
-// Get all criterions
-const getAllCriteria = async (req, res) => {
-  try {
-    const criterion = await Criterion.find().populate('items')
 
-    if (!criterion || criterion.length < 1) {
-      return new ErrorResponseJSON(res, "Criteria not found!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: criterion,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+// @desc    Get ALl Criteria
+// @route   GET /api/v1/employee
+// @access   Private
+const getAllCriteria = async (req, res) => {
+  // try {
+  //   const criterion = await Criterion.find().populate('items')
+
+  //   if (!criterion || criterion.length < 1) {
+  //     return new ErrorResponseJSON(res, "Criteria not found!", 404)
+  //   }
+  //   res.status(200).json({
+  //     success: true,
+  //     data: criterion,
+  //   })
+  // } catch (err) {
+  //   return new ErrorResponseJSON(res, err.message, 500)
+  // }
+  return res.status(200).json(res.advancedResults);
 }
 
 // Get a criterion's details

@@ -18,15 +18,15 @@ const Initiative = new mongoose.Schema({
   },
   qualityStageGate: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Gate",
+    ref: "Phase",
   },
   deliveryPhase: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Gate",
+    ref: "Phase",
   },
   phase: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Gate",
+    ref: "Phase",
   },
   risks: {
     type: String,

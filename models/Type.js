@@ -8,9 +8,9 @@ const Type = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Gate",
   }],
-  count: {
-    type: Number,
-  },
+  // count: {
+  //   type: Number,
+  // },
 })
 
 module.exports = mongoose.model("Type", Type);

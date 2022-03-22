@@ -12,6 +12,8 @@ const { strToBase64 } = require("../utils/generic");
 const open = require("open");
 // const current = require("../utils/currentAppraisalDetails")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
+const asyncHandler = require("../middleware/async")
+const advancedResults = require("../middleware/advancedResults")
 
 //Register new users and send a token
 const postUserDetails = async (req, res) => {
@@ -93,48 +95,50 @@ const postUserDetails = async (req, res) => {
 };
 
 //Get authenticated user's details (account)
-const getUser = async (req, res) => {
+const getUser = asyncHandler(async (req, res) => {
   try {
-    const { user } = req;
-    const {currentSession} = await current()
+    // const { user } = req;
+    // const {currentSession} = await current()
 
-    const staff = await Staff.findById(user).populate("manager");
+    const staff = await Staff.findById(req.user).populate("manager")
 
-    const currentResult = await Result.find({
-      user: user,
-      session: currentSession,
-    });
+    // const currentResult = await Result.find({
+    //   user: user,
+    //   session: currentSession,
+    // });
 
-    const calibration = await Calibration.findOne({
-      staff: user,
-      session: currentSession
-    }).populate({
-        path: "hr",
-        select: "fullname email department manager role isManager"
-      })
+    // const calibration = await Calibration.findOne({
+    //   staff: user,
+    //   session: currentSession
+    // }).populate({
+    //     path: "hr",
+    //     select: "fullname email department manager role isManager"
+    //   })
 
-    if (!staff) {
-      return res.status(404).json({
-        success: false,
-        msg: "Staff not found",
-      });
-    }
+    // if (!staff) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     msg: "Staff not found",
+    //   });
+    // }
 
     res.status(200).json({
       success: true,
-      data: {
-        staff: staff,
-        currentResult: currentResult,
-        calibration: calibration,
-      },
+      // data: {
+      //   staff: staff,
+      //   currentResult: currentResult,
+      //   calibration: calibration,
+      // },
+      data: staff
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
+    // return res.status(500).json({
+    //   success: false,
+    //   msg: err.message,
+    // });
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-};
+});
 
 //Upadate a user's details
 const updateUser = async (req, res) => {
@@ -321,19 +325,20 @@ const uploadDocuments = async (req, res) => {
 
 //Get all user details
 const getAllStaff = async (req, res) => {
-  try {
-    const allStaff = await Staff.find().lean().populate("role");
+  // try {
+  //   const allStaff = await Staff.find().lean().populate("role");
 
-    return res.status(200).json({
-      success: true,
-      data: allStaff,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
-  }
+  //   return res.status(200).json({
+  //     success: true,
+  //     data: allStaff,
+  //   });
+  // } catch (err) {
+  //   return res.status(500).json({
+  //     success: false,
+  //     msg: err.message,
+  //   });
+  // }
+  return res.status(200).json(res.advancedResults)
 };
 
 const deleteStaff = async (req, res) => {
@@ -386,6 +391,20 @@ const getPhoto = async (req, res) => {
     });
   }
 };
+
+// @desc    Log user out / clear cookie
+// @route  GET /api/v1/auth/logout
+// @access   Private
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
 
 module.exports = {
   postUserDetails,

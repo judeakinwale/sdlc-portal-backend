@@ -6,7 +6,7 @@ const {
   updateInitiative,
   deleteInitiative
 } = require("../controllers/initiative")
-const { verifyToken } = require("../middlewares/auth")
+const { verifyToken } = require("../middleware/auth")
 
 router.post("/", verifyToken, createInitiative); // create a initiative
 router.get("/", getAllInitiatives); // get all initiatives

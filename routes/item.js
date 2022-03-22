@@ -6,7 +6,7 @@ const {
   updateItem,
   deleteItem
 } = require("../controllers/item")
-const { verifyToken } = require("../middlewares/auth")
+const { verifyToken } = require("../middleware/auth")
 
 router.post("/", verifyToken, createItem); // create a item
 router.get("/", getAllItems); // get all items

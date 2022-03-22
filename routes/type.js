@@ -6,7 +6,7 @@ const {
   updateType,
   deleteType
 } = require("../controllers/type")
-const { verifyToken } = require("../middlewares/auth")
+const { verifyToken } = require("../middleware/auth")
 
 router.post("/", verifyToken, createType); // create a type
 router.get("/", getAllTypes); // get all types

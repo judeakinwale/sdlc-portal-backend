@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const Staff = require("../models/Staff")
 // const upload = require("../config/multersetup");
 const {
   postUserDetails,
@@ -10,10 +11,8 @@ const {
   // uploadDocuments,
   // getUserDP,
 } = require("../controllers/auth");
-const {
-  verifyToken,
-  verifyTokenAdmin,
-} = require("../middlewares/auth");
+const {verifyToken} = require("../middleware/auth");
+const advancedResults = require("../middleware/advancedResults")
 
 router.post("/", postUserDetails); //register a new user
 router.get("/", verifyToken, getUser); //get authenticated user
@@ -30,7 +29,7 @@ router.patch("/", verifyToken, updateUser); //update a user
 // ); //upload documents
 
 //Admin routes
-router.get("/allstaff", verifyTokenAdmin, getAllStaff); //get all staff"
-router.delete("/:id", verifyTokenAdmin, deleteStaff); //delete a user
+router.get("/all", advancedResults(Staff), getAllStaff); //get all staff"
+router.delete("/:id", deleteStaff); //delete a user
 
 module.exports = router;

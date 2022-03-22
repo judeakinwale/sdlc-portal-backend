@@ -11,19 +11,19 @@ const Gate = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Criterion",
   }],
-  violations: {
-    type: Boolean,
-    default: false,
-  },
-  score: {
-    type: Number,
-  },
-  issues: {
-    type: String,
-  },
-  documents: {
-    type: String,
-  },
+  // violations: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // score: {
+  //   type: Number,
+  // },
+  // issues: {
+  //   type: String,
+  // },
+  // documents: {
+  //   type: String,
+  // },
 })
 
 module.exports = mongoose.model("Gate", Gate);

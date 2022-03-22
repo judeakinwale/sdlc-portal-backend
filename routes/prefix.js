@@ -6,7 +6,7 @@ const {
   updatePrefix,
   deletePrefix
 } = require("../controllers/prefix")
-const { verifyToken } = require("../middlewares/auth")
+const { verifyToken } = require("../middleware/auth")
 
 router.post("/", verifyToken, createPrefix); // create a prefix
 router.get("/", getAllPrefixs); // get all prefixes
