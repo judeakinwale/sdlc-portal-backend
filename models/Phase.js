@@ -4,6 +4,7 @@ const Phase = new mongoose.Schema({
   initiative: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Initiative",
+    required: true,
   },
   initiativeType: {
     type: mongoose.Schema.Types.ObjectId,
@@ -12,6 +13,7 @@ const Phase = new mongoose.Schema({
   gate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Gate",
+    required: true,
   },
   violations: {
     type: Boolean,

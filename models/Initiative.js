@@ -3,22 +3,27 @@ const mongoose = require('mongoose')
 const Initiative = new mongoose.Schema({
   title: {
     type: String,
+    required: true,
   },
   status: {
     type: String,
-    enum: ["Planned", "Pre-Analysis", "Active", "On-hold", "Cancelled", "PO Hold", "Undetermined", "Shelf-Ready", "Operational", "Agile", "Deployed"]
+    enum: ["Planned", "Pre-Analysis", "Active", "On-hold", "Cancelled", "PO Hold", "Undetermined", "Shelf-Ready", "Operational", "Agile", "Deployed"],
+    default: "Undetermined"
   },
   qualityAssuranceEngineer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Staff",
+    required: true,
   },
   type: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Type",
+    required: true,
   },
   qualityStageGate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Phase",
+    required: true,
   },
   deliveryPhase: {
     type: mongoose.Schema.Types.ObjectId,
