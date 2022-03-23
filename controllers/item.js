@@ -1,103 +1,100 @@
+const asyncHandler = require("../middleware/async")
 const Item = require("../models/Item")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 
-// Create a item
-const createItem = async (req, res) => {
-  try {
-    let { body } = req
 
-    const existingItemTitle = await Item.find({title: body.title})
+// @desc    Create Criterion Item
+// @route  POST /api/v1/item
+// @access   Private
+exports.createItem = asyncHandler(async (req, res, next) => {
+  try {
+    const existingItemTitle = await Item.find({title: req.body.title})
 
     if (existingItemTitle.length > 0) {
-      return new ErrorResponseJSON(res, "This item already exists, update it instead!", 400)
+      return next(new ErrorResponseJSON(res, "This item already exists, update it instead!", 400))
     }
 
-    const item = await Item.create(body)
+    const item = await Item.create(req.body)
 
-    res.status(200).json({
-      success: true,
-      data: item,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
-}
-
-// Get all items
-const getAllItems = async (req, res) => {
-  try {
-    const item = await Item.find().populate('prefix')
-
-    if (!item || item.length < 1) {
-      return new ErrorResponseJSON(res, "Items not found!", 404)
+    if (!item) {
+      return next(new ErrorResponseJSON(res, "Item not created!", 404))
     }
     res.status(200).json({
       success: true,
       data: item,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Get a item's details
-const getItem = async (req, res) => {
-  try {
+
+// @desc    Get all Criterion Items
+// @route  GET /api/v1/item
+// @access   Public
+exports.getAllItems = asyncHandler(async (req, res, next) => {
+  return res.status(200).json(res.advancedResults)
+})
+
+
+// @desc    Get Criterion Item
+// @route  GET /api/v1/item/:id
+// @access   Private
+exports.getItem = asyncHandler(async (req, res, next) => {
+try {
     const item = await Item.findById(req.params.id).populate('prefix')
 
     if (!item) {
-      return new ErrorResponseJSON(res, "Item not found!", 404)
+      return next(new ErrorResponseJSON(res, "Item not found!", 404))
     }
-    
     res.status(200).json({
       success: true,
       data: item,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Upadate a item's details
-const updateItem = async (req, res) => {
+
+// @desc    Update Criterion Item
+// @route  PATCH /api/v1/item/:id
+// @access   Private
+exports.updateItem = asyncHandler(async (req, res, next) => {
   try {
-    const { body } = req
-
     const item = await Item.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     })
 
+    if (!item) {
+      return next(new ErrorResponseJSON(res, "Item not updated!", 404))
+    }
     res.status(200).json({
       success: true,
       data: item,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Delete a item
-const deleteItem = async (req, res) => {
+
+// @desc    Delete Criterion Item
+// @route  DELETE /api/v1/item
+// @access   Private
+exports.deleteItem = asyncHandler(async (req, res, next) => {
   try {
     const item = await Item.findByIdAndDelete(req.params.id)
-    if (!item) {
-      return new ErrorResponseJSON(res, "Item not found!", 404)
-    }
     
+    if (!item) {
+      return next(new ErrorResponseJSON(res, "Item not found!", 404))
+    }
     res.status(200).json({
       success: true,
       data: item,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
-
-module.exports = {
-  createItem,
-  getAllItems,
-  getItem,
-  updateItem,
-  deleteItem
-}
+})

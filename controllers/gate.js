@@ -1,103 +1,100 @@
+const asyncHandler = require("../middleware/async")
 const Gate = require("../models/Gate")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 
-// Create a gate
-const createGate = async (req, res) => {
-  try {
-    let { body } = req
 
-    const existingGateTitle = await Gate.find({title: body.title})
+// @desc    Create Gate
+// @route  POST /api/v1/gate
+// @access   Private
+exports.createGate = asyncHandler(async (req, res, next) => {
+  try {
+    const existingGateTitle = await Gate.find({title: req.body.title})
 
     if (existingGateTitle.length > 0) {
-      return new ErrorResponseJSON(res, "This gate already exists, update it instead!", 400)
+      return next(new ErrorResponseJSON(res, "This gate already exists, update it instead!", 400))
     }
 
-    const gate = await Gate.create(body)
+    const gate = await Gate.create(req.body)
 
-    res.status(200).json({
-      success: true,
-      data: gate,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
-}
-
-// Get all gates
-const getAllGates = async (req, res) => {
-  try {
-    const gate = await Gate.find().populate('criteria')
-
-    if (!gate || gate.length < 1) {
-      return new ErrorResponseJSON(res, "Gates not found!", 404)
+    if (!gate) {
+      return next(new ErrorResponseJSON(res, "Gate not created!", 404))
     }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Get a gate's details
-const getGate = async (req, res) => {
+
+// @desc    Get all Gates
+// @route  GET /api/v1/gate
+// @access   Private
+exports.getAllGates = asyncHandler(async (req, res, next) => {
+  return res.status(200).json(res.advancedResults)
+})
+
+
+// @desc    Get Gate
+// @route  GET /api/v1/gate/:id
+// @access   Private
+exports.getGate = asyncHandler(async (req, res, next) => {
   try {
     const gate = await Gate.findById(req.params.id).populate('criteria')
 
     if (!gate) {
-      return new ErrorResponseJSON(res, "Gate not found!", 404)
+      return next(new ErrorResponseJSON(res, "Gate not found!", 404))
     }
-    
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Upadate a gate's details
-const updateGate = async (req, res) => {
+
+// @desc    Update Gate
+// @route  PATCH /api/v1/gate/:id
+// @access   Private
+exports.updateGate = asyncHandler(async (req, res, next) => {
   try {
-    const { body } = req
-
     const gate = await Gate.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     })
 
+    if (!gate) {
+      return next(new ErrorResponseJSON(res, "Gate not updated!", 404))
+    }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
+})
 
-// Delete a gate
-const deleteGate = async (req, res) => {
+
+// @desc    Delete Gate
+// @route  DELETE /api/v1/gate/:id
+// @access   Private
+exports.deleteGate = asyncHandler(async (req, res, next) => {
   try {
     const gate = await Gate.findByIdAndDelete(req.params.id)
-    if (!gate) {
-      return new ErrorResponseJSON(res, "Gate not found!", 404)
-    }
     
+    if (!gate) {
+      return next(new ErrorResponseJSON(res, "Gate not found!", 404))
+    }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-}
-
-module.exports = {
-  createGate,
-  getAllGates,
-  getGate,
-  updateGate,
-  deleteGate
-}
+})

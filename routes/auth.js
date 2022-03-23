@@ -11,7 +11,7 @@ const {
   // uploadDocuments,
   // getUserDP,
 } = require("../controllers/auth");
-const {verifyToken} = require("../middleware/auth");
+const {verifyToken, authorize} = require("../middleware/auth");
 const advancedResults = require("../middleware/advancedResults")
 
 router.post("/", postUserDetails); //register a new user
@@ -30,6 +30,6 @@ router.patch("/", verifyToken, updateUser); //update a user
 
 //Admin routes
 router.get("/all", advancedResults(Staff), getAllStaff); //get all staff"
-router.delete("/:id", deleteStaff); //delete a user
+router.delete("/:id", verifyToken, authorize("HR" , "Admin"), deleteStaff); //delete a user
 
 module.exports = router;

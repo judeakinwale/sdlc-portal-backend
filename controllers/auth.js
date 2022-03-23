@@ -1,5 +1,4 @@
 const Staff = require("../models/Staff");
-// const Result = require("../models/Result")
 const Photo = require("../models/Photo")
 // const Calibration = require("../models/Calibration")
 // const cloudinary = require("cloudinary").v2;
@@ -7,16 +6,18 @@ const Photo = require("../models/Photo")
 const fs = require("fs");
 const axios = require("axios");
 const generateToken = require("../helpers/generateToken");
-const dotenv = require("dotenv").config();
-const { strToBase64 } = require("../utils/generic");
-const open = require("open");
-// const current = require("../utils/currentAppraisalDetails")
+// const dotenv = require("dotenv").config();
+// const { strToBase64 } = require("../utils/generic");
+// const open = require("open");
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 const asyncHandler = require("../middleware/async")
-const advancedResults = require("../middleware/advancedResults")
+
 
 //Register new users and send a token
-const postUserDetails = async (req, res) => {
+// @desc    Register new user / login existing user and send token
+// @route  GET /api/v1/auth/logout
+// @access   Private
+exports.postUserDetails = async (req, res, next) => {
   const { accessToken } = req.body;
 
   if (!accessToken) {
@@ -94,159 +95,123 @@ const postUserDetails = async (req, res) => {
   }
 };
 
-//Get authenticated user's details (account)
-const getUser = asyncHandler(async (req, res) => {
+
+// @desc    Get authenticated user details
+// @route  GET /api/v1/auth/logout
+// @access   Private
+exports.getUser = asyncHandler(async (req, res, next) => {
   try {
-    // const { user } = req;
-    // const {currentSession} = await current()
-
     const staff = await Staff.findById(req.user).populate("manager")
-
-    // const currentResult = await Result.find({
-    //   user: user,
-    //   session: currentSession,
-    // });
-
-    // const calibration = await Calibration.findOne({
-    //   staff: user,
-    //   session: currentSession
-    // }).populate({
-    //     path: "hr",
-    //     select: "fullname email department manager role isManager"
-    //   })
-
-    // if (!staff) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     msg: "Staff not found",
-    //   });
-    // }
 
     res.status(200).json({
       success: true,
-      // data: {
-      //   staff: staff,
-      //   currentResult: currentResult,
-      //   calibration: calibration,
-      // },
       data: staff
     });
   } catch (err) {
-    // return res.status(500).json({
-    //   success: false,
-    //   msg: err.message,
-    // });
     return next(new ErrorResponseJSON(res, err.message, 500))
   }
 });
 
-//Upadate a user's details
-const updateUser = async (req, res) => {
-  try {
-    const { user, body } = req;
 
-    if (!body) {
-      return res
-        .status(400)
-        .json({ success: false, msg: "No data was provided!" });
-    }
-    const staff = await Staff.findByIdAndUpdate(user, body, {
+// @desc    Update authenticated user
+// @route  PATCH /api/v1/auth/
+// @access   Private
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  try {
+    const staff = await Staff.findByIdAndUpdate(user, req.body, {
       new: true,
       runValidators: true,
     });
 
     if (!staff) {
-      return res.status(400).json({
-        success: false,
-        msg: "Staff not found",
-      });
+      return next(new ErrorResponseJSON(res, "Staff not found", 400))
     }
-
     res.status(200).json({
       success: true,
       data: staff,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-};
+});
 
-// upload profile picture
-const uploadDp = async (req, res) => {
-  try {
-    const { file, user } = req;
 
-    const imageSizeLimit = 5 * 1024 * 1024; // 5Mb
+// // @desc    Upload Profile Picture
+// // @route  PATCH /api/v1/auth/photo
+// // @access   Private
+// exports.uploadDp = async (req, res, next) => {
+//   try {
+//     const { file, user } = req;
 
-    if (!file || file.size <= 0) {
-      return res.status(400).json({
-        success: false,
-        msg: "Avatar field is required",
-      });
-    }
+//     const imageSizeLimit = 5 * 1024 * 1024; // 5Mb
 
-    if (file.size >= imageSizeLimit) {
-      return res.status(400).json({
-        success: false,
-        msg: `Uploaded image size limit is ${imageSizeLimit / 1024 / 1024}Mb`,
-      });
-    }
+//     if (!file || file.size <= 0) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Avatar field is required",
+//       });
+//     }
 
-    //check if the file is an image
-    if (!file.mimetype.startsWith("image")) {
-      fs.unlinkSync(file.path); //delete the file from memory if it's not an image
+//     if (file.size >= imageSizeLimit) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: `Uploaded image size limit is ${imageSizeLimit / 1024 / 1024}Mb`,
+//       });
+//     }
 
-      return res.status(400).json({
-        success: false,
-        msg: "Uploaded file is not an image",
-      });
-    }
+//     //check if the file is an image
+//     if (!file.mimetype.startsWith("image")) {
+//       fs.unlinkSync(file.path); //delete the file from memory if it's not an image
 
-    // // upload file to cloud storage
-    // await cloudinarySetup();
-    // const uploadedImage = await cloudinary.uploader.upload(file.path, {
-    //   eager: [
-    //     { height: 100, width: 100, crop: "fill" },
-    //     { height: 150, width: 150, crop: "fill" },
-    //   ],
-    // });
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Uploaded file is not an image",
+//       });
+//     }
 
-    // if (!uploadedImage) {
-    //   return res.status(500).json({
-    //     success: false,
-    //     msg: "Something went wrong",
-    //   });
-    // }
+//     // // upload file to cloud storage
+//     // await cloudinarySetup();
+//     // const uploadedImage = await cloudinary.uploader.upload(file.path, {
+//     //   eager: [
+//     //     { height: 100, width: 100, crop: "fill" },
+//     //     { height: 150, width: 150, crop: "fill" },
+//     //   ],
+//     // });
 
-    //convert the image to base64
-    const base64Image = strToBase64(uploadedImage.eager[0].url);
+//     // if (!uploadedImage) {
+//     //   return res.status(500).json({
+//     //     success: false,
+//     //     msg: "Something went wrong",
+//     //   });
+//     // }
 
-    await Staff.findByIdAndUpdate(
-      user,
-      {
-        photo: base64Image,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    return res.status(200).json({
-      success: true,
-      photo: base64Image,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
-  }
-};
+//     //convert the image to base64
+//     const base64Image = strToBase64(uploadedImage.eager[0].url);
 
-const getUserDP = async (req, res) => {
+//     await Staff.findByIdAndUpdate(
+//       user,
+//       {
+//         photo: base64Image,
+//       },
+//       {
+//         new: true,
+//         runValidators: true,
+//       }
+//     );
+//     return res.status(200).json({
+//       success: true,
+//       photo: base64Image,
+//     });
+//   } catch (err) {
+//     return next(new ErrorResponseJSON(res, err.message, 500))
+//   }
+// };
+
+
+// @desc    Get Authenticated User's Profile Picture
+// @route  GET /api/v1/auth/photo
+// @access   Private
+exports.getUserDP = async (req, res, next) => {
   const { accessToken } = req.body;
   if (!accessToken) {
     return res
@@ -286,114 +251,95 @@ const getUserDP = async (req, res) => {
       await checkStaff.save();
     }
     return res.status(200).json({
+      success: true,
       photo: avatar,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
 };
 
-// upload documents
-const uploadDocuments = async (req, res) => {
+
+// @desc    Upload Documents for Authenticated User
+// @route  PATCH /api/v1/auth/documents
+// @access   Private
+exports.uploadDocuments = async (req, res, next) => {
   try {
     const { files, user } = req;
 
     if (!files || files.size <= 0) {
-      return res.status(400).json({
-        success: false,
-        msg: "No file was provided",
-      });
+      return next(new ErrorResponseJSON(res, "No file was provided", 400))
     }
 
-    const findUser = await Staff.findByIdAndUpdate(
-      user,
-      { files: files },
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({ success: true, data: files });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
+    const currentUser = await Staff.findByIdAndUpdate(user, { files: files }, {
+      new: true,
+      runValidators: true
     });
+
+    res.status(200).json({
+      success: true,
+      data: currentUser
+    });
+  } catch (err) {
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
 };
 
-//Get all user details
-const getAllStaff = async (req, res) => {
-  // try {
-  //   const allStaff = await Staff.find().lean().populate("role");
 
-  //   return res.status(200).json({
-  //     success: true,
-  //     data: allStaff,
-  //   });
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     success: false,
-  //     msg: err.message,
-  //   });
-  // }
+// @desc    Get all staff
+// @route  GET /api/v1/auth/all
+// @access   Private
+exports.getAllStaff = asyncHandler(async (req, res, next) => {
   return res.status(200).json(res.advancedResults)
-};
+});
 
-const deleteStaff = async (req, res) => {
+
+// @desc    Delete user
+// @route  DELETE /api/v1/auth/:id
+// @access   Private
+exports.deleteStaff = asyncHandler(async (req, res, next) => {
   try {
-    const { params } = req;
+    const staff = await Staff.findByIdAndDelete(req.params.id);
 
-    const foundStaff = await Staff.findByIdAndDelete(params.id);
-
-    if (!foundStaff) {
-      return res.status(404).json({
-        success: false,
-        msg: "Staff member not found",
-      });
+    if (!staff) {
+      return next(new ErrorResponseJSON(res, "Staff not found", 404))
     }
-
-    const allStaff = await Staff.find().lean().populate("role");
+    // const allStaff = await Staff.find().lean().populate("role");
 
     return res.status(200).json({
       success: true,
-      msg: "Staff deleted",
-      data: allStaff,
+      // msg: "Staff deleted",
+      // data: allStaff,
+      data: {}
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-};
+});
 
-const getPhoto = async (req, res) => {
+
+// @desc    Get user photo
+// @route  GET /api/v1/auth/photo/:id
+// @access   Private
+exports.getPhoto = asyncHandler(async (req, res, next) => {
   try {
     const photo = await Photo.findById(req.params.id);
 
     if (!photo) {
-      return res.status(404).json({
-        success: false,
-        msg: "Photo not found",
-      });
+      return next(new ErrorResponseJSON(res, "Photo not found", 404))
     }
-
     return res.status(200).json({
       success: true,
       data: photo,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: err.message,
-    });
+    return next(new ErrorResponseJSON(res, err.message, 500))
   }
-};
+});
+
 
 // @desc    Log user out / clear cookie
-// @route  GET /api/v1/auth/logout
+// @route  POST /api/v1/auth/logout
 // @access   Private
 exports.logout = asyncHandler(async (req, res, next) => {
   res.cookie("token", "none", {
@@ -405,15 +351,3 @@ exports.logout = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
-
-module.exports = {
-  postUserDetails,
-  getUser,
-  updateUser,
-  uploadDocuments,
-  uploadDp,
-  getAllStaff,
-  deleteStaff,
-  getUserDP,
-  getPhoto,
-};
