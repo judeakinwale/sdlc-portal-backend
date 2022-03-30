@@ -20,7 +20,9 @@ const criterion  = require("./routes/criterion")
 const gate  = require("./routes/gate")
 const initiative  = require("./routes/initiative")
 const item  = require("./routes/item")
+const phase  = require("./routes/phase")
 const prefix  = require("./routes/prefix")
+const response  = require("./routes/response")
 const type  = require("./routes/type")
 
 // configure express
@@ -62,7 +64,9 @@ app.use("/api/v1/criterion", criterion)
 app.use("/api/v1/gate", gate)
 app.use("/api/v1/initiative", initiative)
 app.use("/api/v1/item", item)
+app.use("/api/v1/phase", phase)
 app.use("/api/v1/prefix", prefix)
+app.use("/api/v1/response", response)
 app.use("/api/v1/type", type)
 
 app.use(errorHandler);
