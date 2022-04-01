@@ -10,8 +10,8 @@ const rateLimit = require("express-rate-limit");
 const express = require("express");
 const connectDB = require("./config/db");
 
-// //load env vars
-// dotenv.config({ path: "./config/.env" });
+// // //load env vars
+// // dotenv.config({ path: "./config/.env" });
 
 // import routes
 // TODO: Add Routes

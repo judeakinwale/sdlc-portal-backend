@@ -8,9 +8,9 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createPrefix = asyncHandler(async (req, res, next) => {
   try {
-    const existingPrefixTitle = await Prefix.find({title: req.body.title})
+    const existingPrefix = await Prefix.find({prefix: req.body.prefix})
 
-    if (existingPrefixTitle.length > 0) {
+    if (existingPrefix.length > 0) {
       return next(new ErrorResponseJSON(res, "This prefix already exists, update it instead!", 400))
     }
 
@@ -42,7 +42,7 @@ exports.getAllPrefixs = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getPrefix = asyncHandler(async (req, res, next) => {
   try {
-    const prefix = await Prefix.findById(req.params.id).populate('gates')
+    const prefix = await Prefix.findById(req.params.id)
 
     if (!prefix) {
       return next(new ErrorResponseJSON(res, "Prefix not found!", 404))

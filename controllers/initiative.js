@@ -49,6 +49,10 @@ exports.getInitiative = asyncHandler(async (req, res, next) => {
     const initiative = await Initiative.findById(req.params.id).populate(
       'qualityAssuranceEngineer type qualityStageGate deliveryPhase phase'
     )
+
+    // Test calculating the QPS score
+    const tempQPS = phaseQPS(initiative)
+    console.log("Temp QPS Score: " + tempQPS)
     // console.log("Initiative's Phase QPS Score: " + initiative.phase.score)
 
     if (!initiative) {

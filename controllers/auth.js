@@ -118,7 +118,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.updateUser = asyncHandler(async (req, res, next) => {
   try {
-    const staff = await Staff.findByIdAndUpdate(user, req.body, {
+    const staff = await Staff.findByIdAndUpdate(req.user, req.body, {
       new: true,
       runValidators: true,
     });
@@ -271,7 +271,7 @@ exports.uploadDocuments = async (req, res, next) => {
       return next(new ErrorResponseJSON(res, "No file was provided", 400))
     }
 
-    const currentUser = await Staff.findByIdAndUpdate(user, { files: files }, {
+    const currentUser = await Staff.findByIdAndUpdate(req.user, { files: files }, {
       new: true,
       runValidators: true
     });
