@@ -9,6 +9,7 @@ const Phase = new mongoose.Schema({
   initiativeType: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Type",
+    required: true,
   },
   gate: {
     type: mongoose.Schema.Types.ObjectId,

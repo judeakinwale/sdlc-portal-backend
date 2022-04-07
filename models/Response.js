@@ -31,6 +31,16 @@ const Response = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Prefix",
   },
+  issues: {
+    type: String,
+  },
+  documents: {
+    type: String,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
+  },
 })
 
 module.exports = mongoose.model("Response", Response);
