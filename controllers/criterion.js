@@ -8,10 +8,22 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createCriterion = asyncHandler(async (req, res, next) => {
   try {
-    const existingCriterionTitle = await Criterion.find({title: req.body.title})
+    const existingCriterion = await Criterion.find({title: req.body.title, gate: req.body.gate})
 
-    if (existingCriterionTitle.length > 0) {
+    if (existingCriterion.length > 0) {
       return next(new ErrorResponseJSON(res, "This criterion already exists, update it instead!", 400))
+    }
+
+    const gateCriteria = await Criterion.find({gate: req.body.gate})
+    let totalPercentage = 0
+
+    for (const [key, criterion] of Object.entries(gateCriteria)) {
+      totalPercentage += criterion.percentage
+    }
+    totalPercentage += req.body.percentage
+
+    if (totalPercentage > 100) {
+      return next(new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400))
     }
 
     const criterion = await Criterion.create(req.body)
@@ -42,7 +54,7 @@ exports.getAllCriteria = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getCriterion = asyncHandler(async (req, res, next) => {
   try {
-    const criterion = await Criterion.findById(req.params.id).populate('items')
+    const criterion = await Criterion.findById(req.params.id).populate('gate items')
 
     if (!criterion) {
       return next(new ErrorResponseJSON(res, "Criterion not found!", 404))
@@ -62,6 +74,27 @@ exports.getCriterion = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.updateCriterion = asyncHandler(async (req, res, next) => {
   try {
+    const existingCriterion = await Criterion.findById(req.params.id)
+    // if () {}
+    const gateCriteria = await Criterion.find({gate: existingCriterion.gate})
+
+    try {
+      let totalPercentage = 0
+
+      for (const [key, criterion] of Object.entries(gateCriteria)) {
+        totalPercentage += criterion.percentage
+      }
+      totalPercentage -= existingCriterion.percentage
+      totalPercentage += req.body.percentage
+      console.log(totalPercentage)
+
+      if (totalPercentage > 100) {
+        return next(new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400))
+      }
+    } catch (err) {
+      // console.log(err.message)
+    }
+    
     const criterion = await Criterion.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

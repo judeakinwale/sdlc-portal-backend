@@ -8,9 +8,9 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createItem = asyncHandler(async (req, res, next) => {
   try {
-    const existingItemTitle = await Item.find({title: req.body.title})
+    const existingItem = await Item.find({criterion: req.body.criterion, title: req.body.title})
 
-    if (existingItemTitle.length > 0) {
+    if (existingItem.length > 0) {
       return next(new ErrorResponseJSON(res, "This item already exists, update it instead!", 400))
     }
 
@@ -42,7 +42,7 @@ exports.getAllItems = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getItem = asyncHandler(async (req, res, next) => {
 try {
-    const item = await Item.findById(req.params.id).populate('prefix')
+    const item = await Item.findById(req.params.id).populate('criterion')
 
     if (!item) {
       return next(new ErrorResponseJSON(res, "Item not found!", 404))

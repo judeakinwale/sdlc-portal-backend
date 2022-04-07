@@ -8,7 +8,7 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createGate = asyncHandler(async (req, res, next) => {
   try {
-    const existingGateTitle = await Gate.find({title: req.body.title})
+    const existingGateTitle = await Gate.find({title: req.body.title, initiativeType: req.body.initiativeType})
 
     if (existingGateTitle.length > 0) {
       return next(new ErrorResponseJSON(res, "This gate already exists, update it instead!", 400))
@@ -42,7 +42,7 @@ exports.getAllGates = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getGate = asyncHandler(async (req, res, next) => {
   try {
-    const gate = await Gate.findById(req.params.id).populate('criteria')
+    const gate = await Gate.findById(req.params.id).populate('initiativeType')
 
     if (!gate) {
       return next(new ErrorResponseJSON(res, "Gate not found!", 404))

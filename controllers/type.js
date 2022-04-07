@@ -42,7 +42,7 @@ exports.getAllTypes = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getType = asyncHandler(async (req, res, next) => {
   try {
-    const type = await Type.findById(req.params.id).populate('gates')
+    const type = await Type.findById(req.params.id)
 
     if (!type) {
       return next(new ErrorResponseJSON(res, "Type not found!", 404))
