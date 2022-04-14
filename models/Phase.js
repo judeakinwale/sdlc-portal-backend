@@ -16,7 +16,11 @@ const Phase = new mongoose.Schema({
     ref: "Gate",
     required: true,
   },
-  violations: {
+  order: {
+    type: Number,
+    required: true,
+  },
+  has_violation: {
     type: Boolean,
     default: false,
   },
@@ -28,6 +32,11 @@ const Phase = new mongoose.Schema({
   },
   documents: {
     type: String,
+  },
+  status: {
+    type: String,
+    enum: ["Pending", "Started", "Undetermined", "Completed"],
+    default: "Pending"
   },
   createdAt: {
     type: Date,

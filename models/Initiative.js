@@ -22,14 +22,25 @@ const Initiative = new mongoose.Schema({
   },
   qualityStageGate: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "Gate",
+  },
+  qualityStageGateDetails: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Phase",
-    required: true,
   },
   deliveryPhase: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Gate",
+  },
+  deliveryPhaseDetails: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Phase",
   },
   phase: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Gate",
+  },
+  phaseDetails: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Phase",
   },
