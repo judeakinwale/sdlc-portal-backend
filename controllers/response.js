@@ -19,6 +19,12 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
     if (existingResponse.length > 0) {
       return next(new ErrorResponseJSON(res, "This response already exists, update it instead!", 400))
     }
+    // Update related phase's status
+    const related_phase = await Phase.findById(req.body.phase) 
+    if (related_phase.status != "Completed" && related_phase.status != "Started") {
+      related_phase.status = "Started"
+      await related_phase.save()
+    }
 
     const response = await Response.create(req.body)
 
