@@ -25,6 +25,6 @@ exports.updateAllSchema = asyncHandler( async () => {
     let instance = await Type.findById(type.id)
     instance.save()
   }
-  console.log("completed")
+  console.log("schema updated")
   return true
 })

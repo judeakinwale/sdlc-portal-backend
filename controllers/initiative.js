@@ -5,6 +5,7 @@ const Phase = require("../models/Phase")
 const Type = require("../models/Type")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 const {phaseQPS} = require("../utils/calculateScore")
+const {updateAllSchema} = require("../utils/updateDetails")
 
 
 // @desc    Create Initiative
@@ -14,6 +15,8 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
   try {
     const {user, body} = req
     const existingInitiative = await Initiative.findOne({title: body.title})
+
+    await updateAllSchema()
 
     // if (existingInitiative.length > 0) {
     //   return new ErrorResponseJSON(res, "This initiative already exists, update it instead!", 400)
@@ -128,7 +131,8 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
     // console.log(deliveryPhase._id)
 
     // TODO: get phase details
-    let phaseDetails = await Phase.findOne({initiative: initiative._id, initiativeType: initiativeType._id, gate: body.phase}).populate("gate")
+    let phaseDetails = await Phase.findOne({initiative: initiative._id, initiativeType: initiativeType._id, gate: body.phase})
+      // .populate("gate")
     // console.log("phaseDetails:")
     // console.log(phaseDetails._id)
 
