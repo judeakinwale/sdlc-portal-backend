@@ -1,3 +1,4 @@
+const asyncHandler = require("../middleware/async")
 const Staff = require("../models/Staff");
 const Photo = require("../models/Photo")
 // const Calibration = require("../models/Calibration")
@@ -10,7 +11,7 @@ const generateToken = require("../helpers/generateToken");
 // const { strToBase64 } = require("../utils/generic");
 // const open = require("open");
 const {ErrorResponseJSON} = require("../utils/errorResponse")
-const asyncHandler = require("../middleware/async")
+const {updateAllSchema} = require("../utils/updateDetails")
 
 
 //Register new users and send a token
@@ -346,6 +347,21 @@ exports.logout = asyncHandler(async (req, res, next) => {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+// @desc    Update database relations
+// @route  POST /api/v1/auth/update
+// @access   Private
+exports.updateRelations = asyncHandler(async (req, res, next) => {
+  try {
+    await updateAllSchema()
+  } catch (err) {
+    return next(new ErrorResponseJSON(res, err.message, 500))
+  }
   res.status(200).json({
     success: true,
     data: {},
