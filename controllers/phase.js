@@ -46,7 +46,7 @@ exports.getAllPhases = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getPhase = asyncHandler(async (req, res, next) => {
   try {
-    const phase = await Phase.findById(req.params.id).populate('criteria')
+    const phase = await Phase.findById(req.params.id).populate("initiative initiativeType gate")
 
     if (!phase) {
       return next(new ErrorResponseJSON(res, "Phase not found!", 404))

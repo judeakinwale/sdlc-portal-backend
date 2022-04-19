@@ -1,4 +1,5 @@
 const asyncHandler = require("../middleware/async")
+const Phase = require("../models/Phase")
 const Response = require("../models/Response")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 
@@ -8,6 +9,9 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createResponse = asyncHandler(async (req, res, next) => {
   try {
+
+    req.body.staff = req.user._id
+
     const existingResponse = await Response.find({
       staff: req.body.staff,
       initiative: req.body.initiative,
@@ -15,12 +19,14 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
       criterion: req.body.criterion,
       item: req.body.item,
     })
+    // console.log(req.body)
 
     if (existingResponse.length > 0) {
       return next(new ErrorResponseJSON(res, "This response already exists, update it instead!", 400))
     }
     // Update related phase's status
-    const related_phase = await Phase.findById(req.body.phase) 
+    const related_phase = await Phase.findById(req.body.phase)
+    console.log(related_phase)
     if (related_phase.status != "Completed" && related_phase.status != "Started") {
       related_phase.status = "Started"
       await related_phase.save()
@@ -36,7 +42,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
       data: response,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -54,7 +60,7 @@ exports.getAllResponses = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getResponse = asyncHandler(async (req, res, next) => {
   try {
-    const response = await Response.findById(req.params.id).populate('criteria')
+    const response = await Response.findById(req.params.id)
 
     if (!response) {
       return next(new ErrorResponseJSON(res, "Response not found!", 404))

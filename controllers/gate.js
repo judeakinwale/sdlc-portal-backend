@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/async")
 const Gate = require("../models/Gate")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {updateAllSchema} = require("../utils/updateDetails")
 
 
 // @desc    Create Gate
@@ -33,6 +34,7 @@ exports.createGate = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/gate
 // @access   Private
 exports.getAllGates = asyncHandler(async (req, res, next) => {
+  await updateAllSchema()
   return res.status(200).json(res.advancedResults)
 })
 
@@ -42,6 +44,7 @@ exports.getAllGates = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getGate = asyncHandler(async (req, res, next) => {
   try {
+    await updateAllSchema()
     const gate = await Gate.findById(req.params.id).populate('initiativeType')
 
     if (!gate) {

@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/async")
 const Criterion = require("../models/Criterion")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {updateAllSchema} = require("../utils/updateDetails")
 
 
 // @desc    Create Criterion
@@ -45,6 +46,7 @@ exports.createCriterion = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/criterion
 // @access   Public
 exports.getAllCriteria = asyncHandler(async (req, res, next) => {
+  await updateAllSchema()
   return res.status(200).json(res.advancedResults)
 })
 
@@ -54,6 +56,7 @@ exports.getAllCriteria = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getCriterion = asyncHandler(async (req, res, next) => {
   try {
+    await updateAllSchema()
     const criterion = await Criterion.findById(req.params.id).populate('gate items')
 
     if (!criterion) {
