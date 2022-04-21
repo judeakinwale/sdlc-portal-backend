@@ -18,6 +18,11 @@ const Response = new mongoose.Schema({
     ref: "Phase",
     required: true,
   },
+  gate: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Gate",
+    required: true,
+  },
   criterion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Criterion",
