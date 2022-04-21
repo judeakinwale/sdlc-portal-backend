@@ -11,20 +11,20 @@ exports.createPrefix = asyncHandler(async (req, res, next) => {
     const existingPrefix = await Prefix.find({prefix: req.body.prefix})
 
     if (existingPrefix.length > 0) {
-      return next(new ErrorResponseJSON(res, "This prefix already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This prefix already exists, update it instead!", 400)
     }
 
     const prefix = await Prefix.create(req.body)
 
     if (!prefix) {
-      return next(new ErrorResponseJSON(res, "Prefix not created!", 404))
+      return new ErrorResponseJSON(res, "Prefix not created!", 404)
     }
     res.status(200).json({
       success: true,
       data: prefix,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -45,14 +45,14 @@ exports.getPrefix = asyncHandler(async (req, res, next) => {
     const prefix = await Prefix.findById(req.params.id)
 
     if (!prefix) {
-      return next(new ErrorResponseJSON(res, "Prefix not found!", 404))
+      return new ErrorResponseJSON(res, "Prefix not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: prefix,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -68,14 +68,14 @@ exports.updatePrefix = asyncHandler(async (req, res, next) => {
     })
 
     if (!prefix) {
-      return next(new ErrorResponseJSON(res, "Prefix not updated!", 404))
+      return new ErrorResponseJSON(res, "Prefix not updated!", 404)
     }
     res.status(200).json({
       success: true,
       data: prefix,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -88,13 +88,13 @@ exports.deletePrefix = asyncHandler(async (req, res, next) => {
     const prefix = await Prefix.findByIdAndDelete(req.params.id)
     
     if (!prefix) {
-      return next(new ErrorResponseJSON(res, "Prefix not found!", 404))
+      return new ErrorResponseJSON(res, "Prefix not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: prefix,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

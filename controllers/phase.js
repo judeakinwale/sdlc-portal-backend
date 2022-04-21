@@ -15,20 +15,20 @@ exports.createPhase = asyncHandler(async (req, res, next) => {
     })
 
     if (existingPhase.length > 0) {
-      return next(new ErrorResponseJSON(res, "This phase already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This phase already exists, update it instead!", 400)
     }
 
     const phase = await Phase.create(req.body)
 
     if (!phase) {
-      return next(new ErrorResponseJSON(res, "Phase not created!", 404))
+      return new ErrorResponseJSON(res, "Phase not created!", 404)
     }
     res.status(200).json({
       success: true,
       data: phase,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -49,14 +49,14 @@ exports.getPhase = asyncHandler(async (req, res, next) => {
     const phase = await Phase.findById(req.params.id).populate("initiative initiativeType gate")
 
     if (!phase) {
-      return next(new ErrorResponseJSON(res, "Phase not found!", 404))
+      return new ErrorResponseJSON(res, "Phase not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: phase,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -72,14 +72,14 @@ exports.updatePhase = asyncHandler(async (req, res, next) => {
     })
 
     if (!phase) {
-      return next(new ErrorResponseJSON(res, "Phase not updated!", 404))
+      return new ErrorResponseJSON(res, "Phase not updated!", 404)
     }
     res.status(200).json({
       success: true,
       data: phase,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -92,13 +92,13 @@ exports.deletePhase = asyncHandler(async (req, res, next) => {
     const phase = await Phase.findByIdAndDelete(req.params.id)
     
     if (!phase) {
-      return next(new ErrorResponseJSON(res, "Phase not found!", 404))
+      return new ErrorResponseJSON(res, "Phase not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: phase,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

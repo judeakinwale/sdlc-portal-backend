@@ -29,7 +29,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
     // console.log(req.body)
 
     if (existingResponse.length > 0) {
-      return next(new ErrorResponseJSON(res, "This response already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This response already exists, update it instead!", 400)
     }
     // Update related phase's status
     const related_phase = await Phase.findById(req.body.phase)
@@ -42,7 +42,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
     const response = await Response.create(req.body)
 
     if (!response) {
-      return next(new ErrorResponseJSON(res, "Response not created!", 404))
+      return new ErrorResponseJSON(res, "Response not created!", 404)
     }
 
     const initiative = await Initiative.findById(response.initiative)
@@ -74,14 +74,14 @@ exports.getResponse = asyncHandler(async (req, res, next) => {
     const response = await Response.findById(req.params.id)
 
     if (!response) {
-      return next(new ErrorResponseJSON(res, "Response not found!", 404))
+      return new ErrorResponseJSON(res, "Response not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: response,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -97,7 +97,7 @@ exports.updateResponse = asyncHandler(async (req, res, next) => {
     })
 
     if (!response) {
-      return next(new ErrorResponseJSON(res, "Response not updated!", 404))
+      return new ErrorResponseJSON(res, "Response not updated!", 404)
     }
 
     const initiative = await Initiative.findById(response.initiative)
@@ -108,7 +108,7 @@ exports.updateResponse = asyncHandler(async (req, res, next) => {
       data: response,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -121,13 +121,13 @@ exports.deleteResponse = asyncHandler(async (req, res, next) => {
     const response = await Response.findByIdAndDelete(req.params.id)
     
     if (!response) {
-      return next(new ErrorResponseJSON(res, "Response not found!", 404))
+      return new ErrorResponseJSON(res, "Response not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: response,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

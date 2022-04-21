@@ -11,20 +11,20 @@ exports.createType = asyncHandler(async (req, res, next) => {
     const existingTypeTitle = await Type.find({title: req.body.title})
 
     if (existingTypeTitle.length > 0) {
-      return next(new ErrorResponseJSON(res, "This type already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This type already exists, update it instead!", 400)
     }
 
     const type = await Type.create(req.body)
 
     if (!type) {
-      return next(new ErrorResponseJSON(res, "Type not created!", 404))
+      return new ErrorResponseJSON(res, "Type not created!", 404)
     }
     res.status(200).json({
       success: true,
       data: type,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -45,14 +45,14 @@ exports.getType = asyncHandler(async (req, res, next) => {
     const type = await Type.findById(req.params.id)
 
     if (!type) {
-      return next(new ErrorResponseJSON(res, "Type not found!", 404))
+      return new ErrorResponseJSON(res, "Type not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: type,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -68,14 +68,14 @@ exports.updateType = asyncHandler(async (req, res, next) => {
     })
 
     if (!type) {
-      return next(new ErrorResponseJSON(res, "Type not updated!", 404))
+      return new ErrorResponseJSON(res, "Type not updated!", 404)
     }
     res.status(200).json({
       success: true,
       data: type,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -88,13 +88,13 @@ exports.deleteType = asyncHandler(async (req, res, next) => {
     const type = await Type.findByIdAndDelete(req.params.id)
     
     if (!type) {
-      return next(new ErrorResponseJSON(res, "Type not found!", 404))
+      return new ErrorResponseJSON(res, "Type not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: type,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

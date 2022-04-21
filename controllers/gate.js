@@ -12,20 +12,20 @@ exports.createGate = asyncHandler(async (req, res, next) => {
     const existingGateTitle = await Gate.find({title: req.body.title, initiativeType: req.body.initiativeType})
 
     if (existingGateTitle.length > 0) {
-      return next(new ErrorResponseJSON(res, "This gate already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This gate already exists, update it instead!", 400)
     }
 
     const gate = await Gate.create(req.body)
 
     if (!gate) {
-      return next(new ErrorResponseJSON(res, "Gate not created!", 404))
+      return new ErrorResponseJSON(res, "Gate not created!", 404)
     }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -48,14 +48,14 @@ exports.getGate = asyncHandler(async (req, res, next) => {
     const gate = await Gate.findById(req.params.id).populate('initiativeType')
 
     if (!gate) {
-      return next(new ErrorResponseJSON(res, "Gate not found!", 404))
+      return new ErrorResponseJSON(res, "Gate not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -71,14 +71,14 @@ exports.updateGate = asyncHandler(async (req, res, next) => {
     })
 
     if (!gate) {
-      return next(new ErrorResponseJSON(res, "Gate not updated!", 404))
+      return new ErrorResponseJSON(res, "Gate not updated!", 404)
     }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -91,13 +91,13 @@ exports.deleteGate = asyncHandler(async (req, res, next) => {
     const gate = await Gate.findByIdAndDelete(req.params.id)
     
     if (!gate) {
-      return next(new ErrorResponseJSON(res, "Gate not found!", 404))
+      return new ErrorResponseJSON(res, "Gate not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: gate,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

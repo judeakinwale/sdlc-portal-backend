@@ -12,7 +12,7 @@ exports.createCriterion = asyncHandler(async (req, res, next) => {
     const existingCriterion = await Criterion.find({title: req.body.title, gate: req.body.gate})
 
     if (existingCriterion.length > 0) {
-      return next(new ErrorResponseJSON(res, "This criterion already exists, update it instead!", 400))
+      return new ErrorResponseJSON(res, "This criterion already exists, update it instead!", 400)
     }
 
     const gateCriteria = await Criterion.find({gate: req.body.gate})
@@ -24,20 +24,20 @@ exports.createCriterion = asyncHandler(async (req, res, next) => {
     totalPercentage += req.body.percentage
 
     if (totalPercentage > 100) {
-      return next(new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400))
+      return new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400)
     }
 
     const criterion = await Criterion.create(req.body)
 
     if (!criterion) {
-      return next(new ErrorResponseJSON(res, "Criterion not created!", 404))
+      return new ErrorResponseJSON(res, "Criterion not created!", 404)
     }
     res.status(200).json({
       success: true,
       data: criterion,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -60,14 +60,14 @@ exports.getCriterion = asyncHandler(async (req, res, next) => {
     const criterion = await Criterion.findById(req.params.id).populate('gate items')
 
     if (!criterion) {
-      return next(new ErrorResponseJSON(res, "Criterion not found!", 404))
+      return new ErrorResponseJSON(res, "Criterion not found!", 404)
     }
     res.status(200).json({
       success: true,
       data: criterion,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -92,7 +92,7 @@ exports.updateCriterion = asyncHandler(async (req, res, next) => {
       console.log(totalPercentage)
 
       if (totalPercentage > 100) {
-        return next(new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400))
+        return new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400)
       }
     } catch (err) {
       // console.log(err.message)
@@ -104,14 +104,14 @@ exports.updateCriterion = asyncHandler(async (req, res, next) => {
     })
 
     if (!criterion) {
-      return next(new ErrorResponseJSON(res, "Criterion not updated!", 404))
+      return new ErrorResponseJSON(res, "Criterion not updated!", 404)
     }
     res.status(200).json({
       success: true,
       data: criterion,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })
 
@@ -123,7 +123,7 @@ exports.deleteCriterion = asyncHandler(async (req, res, next) => {
   try {
     const criterion = await Criterion.findByIdAndDelete(req.params.id)
     if (!criterion) {
-      return next(new ErrorResponseJSON(res, "Criterion not found!", 404))
+      return new ErrorResponseJSON(res, "Criterion not found!", 404)
     }
     
     res.status(200).json({
@@ -131,6 +131,6 @@ exports.deleteCriterion = asyncHandler(async (req, res, next) => {
       data: criterion,
     })
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 })

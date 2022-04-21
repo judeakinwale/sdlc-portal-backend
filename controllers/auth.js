@@ -109,7 +109,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
       data: staff
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 });
 
@@ -125,14 +125,14 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     });
 
     if (!staff) {
-      return next(new ErrorResponseJSON(res, "Staff not found", 400))
+      return new ErrorResponseJSON(res, "Staff not found", 400)
     }
     res.status(200).json({
       success: true,
       data: staff,
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 });
 
@@ -204,7 +204,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 //       photo: base64Image,
 //     });
 //   } catch (err) {
-//     return next(new ErrorResponseJSON(res, err.message, 500))
+//     return new ErrorResponseJSON(res, err.message, 500)
 //   }
 // };
 
@@ -256,7 +256,7 @@ exports.getUserDP = async (req, res, next) => {
       photo: avatar,
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 };
 
@@ -269,7 +269,7 @@ exports.uploadDocuments = async (req, res, next) => {
     const { files, user } = req;
 
     if (!files || files.size <= 0) {
-      return next(new ErrorResponseJSON(res, "No file was provided", 400))
+      return new ErrorResponseJSON(res, "No file was provided", 400)
     }
 
     const currentUser = await Staff.findByIdAndUpdate(req.user._id, { files: files }, {
@@ -282,7 +282,7 @@ exports.uploadDocuments = async (req, res, next) => {
       data: currentUser
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 };
 
@@ -303,7 +303,7 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
     const staff = await Staff.findByIdAndDelete(req.params.id);
 
     if (!staff) {
-      return next(new ErrorResponseJSON(res, "Staff not found", 404))
+      return new ErrorResponseJSON(res, "Staff not found", 404)
     }
     // const allStaff = await Staff.find().lean().populate("role");
 
@@ -314,7 +314,7 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
       data: {}
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 });
 
@@ -327,14 +327,14 @@ exports.getPhoto = asyncHandler(async (req, res, next) => {
     const photo = await Photo.findById(req.params.id);
 
     if (!photo) {
-      return next(new ErrorResponseJSON(res, "Photo not found", 404))
+      return new ErrorResponseJSON(res, "Photo not found", 404)
     }
     return res.status(200).json({
       success: true,
       data: photo,
     });
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
 });
 
@@ -360,7 +360,7 @@ exports.updateRelations = asyncHandler(async (req, res, next) => {
   try {
     await updateAllSchema()
   } catch (err) {
-    return next(new ErrorResponseJSON(res, err.message, 500))
+    return new ErrorResponseJSON(res, err.message, 500)
   }
   res.status(200).json({
     success: true,
