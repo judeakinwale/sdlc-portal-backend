@@ -8,8 +8,8 @@ const {
   // uploadDp,
   getAllStaff,
   deleteStaff,
-  // uploadDocuments,
-  // getUserDP,
+  uploadDocuments,
+  getUserDP,
   logout,
   updateRelations,
 } = require("../controllers/auth");
@@ -17,19 +17,19 @@ const {verifyToken, authorize} = require("../middleware/auth");
 const advancedResults = require("../middleware/advancedResults")
 
 router.post("/", postUserDetails); //register a new user
-router.post("/", logout); //log out authenticated user
 router.get("/", verifyToken, getUser); //get authenticated user
 router.patch("/", verifyToken, updateUser); //update a user
+router.post("/logout", logout); //log out authenticated user
 
 // router.patch("/userdp", verifyToken, upload.single("profilePic"), uploadDp);
-// router.get("/photo", verifyToken, getUserDP); //get staff profile picture
+router.post("/photo", verifyToken, getUserDP); //get staff profile picture
 
-// router.patch(
-//   "/documents",
-//   verifyToken,
-//   upload.array("documents", 5),
-//   uploadDocuments
-// ); //upload documents
+router.patch(
+  "/documents",
+  verifyToken,
+  // upload.array("documents", 5),
+  uploadDocuments
+); //upload documents
 
 //Admin routes
 router.get("/all", advancedResults(Staff), getAllStaff); //get all staff"

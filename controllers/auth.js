@@ -98,11 +98,11 @@ exports.postUserDetails = async (req, res, next) => {
 
 
 // @desc    Get authenticated user details
-// @route  GET /api/v1/auth/logout
+// @route  GET /api/v1/auth/
 // @access   Private
 exports.getUser = asyncHandler(async (req, res, next) => {
   try {
-    const staff = await Staff.findById(req.user).populate("manager")
+    const staff = await Staff.findById(req.user._id).populate("manager")
 
     res.status(200).json({
       success: true,
@@ -119,7 +119,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.updateUser = asyncHandler(async (req, res, next) => {
   try {
-    const staff = await Staff.findByIdAndUpdate(req.user, req.body, {
+    const staff = await Staff.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -209,8 +209,8 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 // };
 
 
-// @desc    Get Authenticated User's Profile Picture
-// @route  GET /api/v1/auth/photo
+// @desc    Get Authenticated User's Profile Picture (using access token)
+// @route  POST /api/v1/auth/photo
 // @access   Private
 exports.getUserDP = async (req, res, next) => {
   const { accessToken } = req.body;
@@ -242,7 +242,7 @@ exports.getUserDP = async (req, res, next) => {
     const photo = await axios(photoConfig); //get user data from active directory
     const avatar = new Buffer.from(photo.data, "binary").toString("base64");
     
-    const checkStaff = await Staff.findById(req.user).populate("photo");
+    const checkStaff = await Staff.findById(req.user._id).populate("photo");
 
     if (!checkStaff.photo || checkStaff.photo.image != avatar) {
       const staffPhoto = new Photo({image: avatar});
@@ -272,7 +272,7 @@ exports.uploadDocuments = async (req, res, next) => {
       return next(new ErrorResponseJSON(res, "No file was provided", 400))
     }
 
-    const currentUser = await Staff.findByIdAndUpdate(req.user, { files: files }, {
+    const currentUser = await Staff.findByIdAndUpdate(req.user._id, { files: files }, {
       new: true,
       runValidators: true
     });
