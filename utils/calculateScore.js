@@ -6,7 +6,7 @@ const Prefix = require("../models/Prefix");
 const Response = require("../models/Response")
 
 
-exports.allPhaseQPS = {} // likely to break
+// exports.allPhaseQPS = {} // likely to break
 
 
 exports.phaseQPS = asyncHandler(async initiative => {
@@ -72,15 +72,19 @@ exports.phaseQPS = asyncHandler(async initiative => {
         phase.status = "Started"
       }
       
-      if (phase.status == "Started" && phase_score < 50) {
+      if (phase.status == "Started" && phase_score < 50 ) {
         phase.has_violation = true
+        // phase.status = "Undetermined"
+      } else if (phase.status == "Completed" && phase_score < 50) {
+        phase.has_violation = true
+        phase.status = "Undetermined"
       } else {
         phase.has_violation = false
       }
       
       await phase.save()
     }
-    this.allPhaseQPS = phase_result // likely to break
+    // this.allPhaseQPS = phase_result // likely to break
     return phase_result
 
   } catch (err) {

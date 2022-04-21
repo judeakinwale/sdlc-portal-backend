@@ -78,7 +78,6 @@ exports.getCriterion = asyncHandler(async (req, res, next) => {
 exports.updateCriterion = asyncHandler(async (req, res, next) => {
   try {
     const existingCriterion = await Criterion.findById(req.params.id)
-    // if () {}
     const gateCriteria = await Criterion.find({gate: existingCriterion.gate})
 
     try {
