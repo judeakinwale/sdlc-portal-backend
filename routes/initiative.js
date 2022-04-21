@@ -5,7 +5,8 @@ const {
   getAllInitiatives,
   getInitiative,
   updateInitiative,
-  deleteInitiative
+  deleteInitiative,
+  getInitiativePhases,
 } = require("../controllers/initiative")
 const { verifyToken } = require("../middleware/auth");
 const advancedResults = require('../middleware/advancedResults');
@@ -16,5 +17,6 @@ router.get("/", advancedResults(Initiative), getAllInitiatives); // get all init
 router.get("/:id", verifyToken, getInitiative); // get initiative details by id
 router.patch("/:id", verifyToken, updateInitiative); // update initiative details by id
 router.delete("/:id", verifyToken, deleteInitiative); // delete initiative by id
+router.get("/:id/phases", verifyToken, getInitiativePhases); // get initiative phases by initiative id
 
 module.exports = router;
