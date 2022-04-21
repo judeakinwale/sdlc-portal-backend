@@ -13,7 +13,6 @@ const Initiative = new mongoose.Schema({
   qualityAssuranceEngineer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Staff",
-    // required: true,
   },
   type: {
     type: mongoose.Schema.Types.ObjectId,

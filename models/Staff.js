@@ -27,7 +27,6 @@ const StaffSchema = new mongoose.Schema({
     required: [true, "Please add Email"],
     unique: true,
   },
-
   department: {
     type: String,
   },
@@ -50,11 +49,9 @@ const StaffSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-
   files: {
     type: Array,
   },
-
   location: {
     type: String,
   },
@@ -91,7 +88,6 @@ const StaffSchema = new mongoose.Schema({
   nin: { type: String },
   bvn: { type: String },
   description: { type: String },
-
   createdAt: {
     type: Date,
     default: Date.now,

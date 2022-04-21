@@ -5,16 +5,9 @@ const Type = new mongoose.Schema({
   title: {
     type: String,
   },
-  // gates: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Gate",
-  // }],
   gates: {
     type: Array,
   },
-  // count: {
-  //   type: Number,
-  // },
 })
 
 Type.pre("save", async function () {

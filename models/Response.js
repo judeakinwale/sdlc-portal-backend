@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 
 const Response = new mongoose.Schema({
-  // title: {
-  //   type: String,
-  //   required: true,
-  // },
   staff: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Staff",
