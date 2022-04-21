@@ -1,6 +1,8 @@
 const asyncHandler = require("../middleware/async")
+const Initiative = require("../models/Initiative")
 const Phase = require("../models/Phase")
 const Response = require("../models/Response")
+const { phaseQPS } = require("../utils/calculateScore")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 
 
@@ -9,8 +11,13 @@ const {ErrorResponseJSON} = require("../utils/errorResponse")
 // @access   Private
 exports.createResponse = asyncHandler(async (req, res, next) => {
   try {
-
+    const {user, body} = req
     req.body.staff = req.user._id
+
+    if (!("phase" in body) && "gate" in body) {
+      const getPhase  = await Phase.findOne(initiative=req.body.initiative, gate=req.body.gate)
+      req.body.phase = getPhase.id
+    }
 
     const existingResponse = await Response.find({
       staff: req.body.staff,
@@ -37,6 +44,10 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
     if (!response) {
       return next(new ErrorResponseJSON(res, "Response not created!", 404))
     }
+
+    const initiative = await Initiative.findById(response.initiative)
+    await phaseQPS(initiative)
+
     res.status(200).json({
       success: true,
       data: response,
@@ -88,6 +99,10 @@ exports.updateResponse = asyncHandler(async (req, res, next) => {
     if (!response) {
       return next(new ErrorResponseJSON(res, "Response not updated!", 404))
     }
+
+    const initiative = await Initiative.findById(response.initiative)
+    await phaseQPS(initiative)
+
     res.status(200).json({
       success: true,
       data: response,

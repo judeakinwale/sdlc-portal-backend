@@ -149,7 +149,7 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
 
     // Create or update initiative
     const initiative = await createOrUpdateInitiative(req, res)
-    console.log("[`__initiative__`]: " + initiative)
+    console.log("[`__initiative__`]: " + initiative._id)
 
     // Test calculating the QPS score
     // TODO: Make phase results an external array
@@ -220,7 +220,8 @@ exports.updateInitiative = asyncHandler(async (req, res, next) => {
     // })
 
     // Create or update initiative
-    const initiative = await baseUpdateInitiative(req, res)
+    // const initiative = await baseUpdateInitiative(req, res)
+    const initiative = await createOrUpdateInitiative(req, res)
     console.log("[`__initiative__`]: " + initiative)
 
     // Test calculating the QPS score
@@ -256,6 +257,29 @@ exports.deleteInitiative = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: initiative,
+    })
+  } catch (err) {
+    return new ErrorResponseJSON(res, err.message, 500)
+  }
+})
+
+
+// @desc    Get Initiative Phases
+// @route  GET /api/v1/Initiative/:id/phases
+// @access   Private
+exports.getInitiativePhases = asyncHandler(async (req, res, next) => {
+  try {
+    await updateAllSchema()
+    const phases = await Phase.find({initiative:req.params.id}).populate(
+      'initiative initiativeType gate'
+    )
+
+    if (phases.length < 1) {
+      return new ErrorResponseJSON(res, "Initiative Phases not found!", 404)
+    }
+    res.status(200).json({
+      success: true,
+      data: phases,
     })
   } catch (err) {
     return new ErrorResponseJSON(res, err.message, 500)
