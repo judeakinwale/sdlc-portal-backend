@@ -9,26 +9,50 @@ const Type = require("../models/Type")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 
 exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
-  
+
   const {user, body} = req
-  const existingInitiative = await Initiative.findOne({title: body.title})
 
-  // if (existingInitiative.length > 0) {
-  //   return new ErrorResponseJSON(res, "This initiative already exists, update it instead!", 400)
-  // }
-
-  body.requesterName = req.user.fullname
-  body.requesterEmail = req.user.email
+  let existingInitiative
+  let initiativeType
+  if (req.params.id) {
+    existingInitiative = await Initiative.findById(req.params.id)
+    initiativeType = await Type.findById(existingInitiative.type)
+  } else {
+    existingInitiative = await Initiative.findOne({title: body.title})
+    initiativeType = await Type.findById(body.type)
+    body.requesterName = req.user.fullname
+    body.requesterEmail = req.user.email
+  }
 
   let qualityStageGate
   let deliveryPhase
-  
   if ("qualityStageGate" in body && "deliveryPhase" in body) {
     deliveryPhase = await Gate.findById(body.deliveryPhase)
     qualityStageGate = await Gate.findById(body.qualityStageGate)
   } 
-  const phase = await Gate.findById(body.phase)
-  // // // // console.log(phase)
+
+  if (!("qualityAssuranceEngineer" in body)) {
+    body.qualityAssuranceEngineer = req.user
+  }
+
+  let phase
+  try {
+    if ("phase" in body) {
+      phase = await Gate.findById(body.phase)
+    } else if (req.params.id) {
+      phase = await Gate.findById(existingInitiative.phase)
+      console.log(phase)
+    } else {
+      phase = await Gate.findOne({initiativeType: initiativeType._id, order:1})
+      body.phase = phase
+      console.log(`\nphase found: ${phase}`)
+    }
+
+  } catch (err) {
+    // const releventType = 
+    // phase = await Gate.findOne({initiativeType: initiativeType._id, order:1})
+    console.log(`Error getting Phase: ${err} `)
+  }
   
   let initiative
   if (existingInitiative) {
@@ -36,18 +60,108 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     })
-    // console.log("updated initiative")
-    // // // // console.log(initiative)
   } else {
-    initiative = await Initiative.create(req.body)
-    // console.log("created initiative")
+    if (req.params.id) {
+      return new ErrorResponseJSON(res, "Existing Initiative not found!", 404)
+    } else {
+      initiative = await Initiative.create(req.body)
+    }
   }
+  // console.log(initiative)
+  // const initiativeType = await Type.findById(existingInitiative.type)
+
+  // if (req.params.id) {
+  //   console.log("The id in the request parameters is: " + req.params.id)
+
+    
+    
+
+    
+
+    
+    
+  // } else {
+  //   console.log("There is no id in the request parameters")
+
+        
+  //   const {user, body} = req
+    
+
+  //   body.requesterName = req.user.fullname
+  //   body.requesterEmail = req.user.email
+
+  //   let qualityStageGate
+  //   let deliveryPhase
+    
+  //   if ("qualityStageGate" in body && "deliveryPhase" in body) {
+  //     deliveryPhase = await Gate.findById(body.deliveryPhase)
+  //     qualityStageGate = await Gate.findById(body.qualityStageGate)
+  //   } 
+  //   const phase = await Gate.findById(body.phase)
+    
+  //   let initiative
+  //   if (existingInitiative) {
+  //     initiative = await Initiative.findByIdAndUpdate(existingInitiative.id, req.body, {
+  //       new: true,
+  //       runValidators: true,
+  //     })
+  //   } else {
+  //     initiative = await Initiative.create(req.body)
+  //   }
+    
+  //   const initiativeType = await Type.findById(body.type)
+
+  // }
+
+
+
+
+
+
+
+
+
+
   
-  // console.log("initiative:")
-  // console.log(await initiative._id)
-  const initiativeType = await Type.findById(body.type)
-  // console.log("Type:")
-  // console.log(await initiativeType._id)
+  // const {user, body} = req
+  // const existingInitiative = await Initiative.findOne({title: body.title})
+
+  // // if (existingInitiative.length > 0) {
+  // //   return new ErrorResponseJSON(res, "This initiative already exists, update it instead!", 400)
+  // // }
+
+  // body.requesterName = req.user.fullname
+  // body.requesterEmail = req.user.email
+
+  // let qualityStageGate
+  // let deliveryPhase
+  
+  // if ("qualityStageGate" in body && "deliveryPhase" in body) {
+  //   deliveryPhase = await Gate.findById(body.deliveryPhase)
+  //   qualityStageGate = await Gate.findById(body.qualityStageGate)
+  // } 
+  // const phase = await Gate.findById(body.phase)
+  // // // // // console.log(phase)
+  
+  // let initiative
+  // if (existingInitiative) {
+  //   initiative = await Initiative.findByIdAndUpdate(existingInitiative.id, req.body, {
+  //     new: true,
+  //     runValidators: true,
+  //   })
+  //   // console.log("updated initiative")
+  //   // // // // console.log(initiative)
+  // } else {
+  //   initiative = await Initiative.create(req.body)
+  //   // console.log("created initiative")
+  // }
+  
+  // // console.log("initiative:")
+  // // console.log(await initiative._id)
+  // const initiativeType = await Type.findById(body.type)
+  // // console.log("Type:")
+  // // console.log(await initiativeType._id)
+  // console.log(initiativeType.gates)
 
   // create phases for all gates of the selected initiative type
   for (const [key, gate] of Object.entries(initiativeType.gates)) {
@@ -56,9 +170,23 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     // console.log("\n\n")
     // const relatedPhase = await Phase.create({initiative: initiative.id, initiativeType: initiativeType.id, gate: gate.id, order: gate.order})
     try {
-      await Phase.findOne({initiative: initiative._id, initiativeType: initiativeType._id, gate: gate._id, order: gate.order})
+      const foundPhase = await Phase.findOne({initiative: initiative._id, 
+        initiativeType: initiativeType._id, 
+        gate: gate._id, 
+        order: gate.order
+      })
+      // console.log("Phase found")
+      // console.log(foundPhase)
+      if (!foundPhase ) {
+        // console.log("foundPhase is null")
+        const createdPhase = await Phase.create({initiative: initiative._id, initiativeType: initiativeType._id, gate: gate._id, order: gate.order})
+        // console.log("Phase not found, created instead")
+        // console.log(createdPhase)
+        // break
+      }
     } catch (err) {
-      await Phase.create({initiative: initiative._id, initiativeType: initiativeType._id, gate: gate._id, order: gate.order})
+      // await Phase.create({initiative: initiative._id, initiativeType: initiativeType._id, gate: gate._id, order: gate.order})
+      console.log("Phase not found")
     }
   }
 
@@ -72,9 +200,10 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     * - phaseDetails
     * using available data.
   */
-  const relatedPhases = await Phase.find({initiative: initiative._id, initiativeType: initiativeType._id}).sort("order").populate("gate")
+//  console.log(initiative._id + "    " + initiativeType._id)
+  const relatedPhases = await Phase.find({initiative: initiative._id}).sort("order").populate("gate")
   // console.log("relatedPhases:")
-  // console.log(relatedPhases.length)
+  // console.log(relatedPhases)
 
   // TODO: Get quality stage gate details (violations: true, status: "Undetermined")
   let qualityStageGateDetails
@@ -127,7 +256,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
 
   // TODO: get phase details
   let phaseDetails = await Phase.findOne({initiative: initiative._id, initiativeType: initiativeType._id, gate: body.phase})
-    // .populate("gate")
+    .populate("gate")
   // console.log("phaseDetails:")
   // console.log(phaseDetails._id)
 
@@ -145,6 +274,12 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
 })
 
 exports.baseUpdateInitiative = asyncHandler(async (req, res) => {
+
+  if (req.params.id) {
+    console.log("The id in the request parameters is: " + req.params.id)
+  } else {
+    console.log("There is no id in the request parameters")
+  }
   
   const {user, body} = req
   const existingInitiative = await Initiative.findById(req.params.id)
