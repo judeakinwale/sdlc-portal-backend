@@ -47,8 +47,11 @@ exports.phaseQPS = asyncHandler(async initiative => {
 
         phase_responses_length += phase_responses.length
 
+        console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
+
         let criterion_score = 0
-        max_score = phase_responses.length * max_prefix_score
+        // max_score = phase_responses.length * max_prefix_score
+        max_score = criterion_item.length * max_prefix_score
 
         for (const[key, response] of Object.entries(phase_responses)) {
           criterion_score  += response.prefix.score
@@ -64,6 +67,8 @@ exports.phaseQPS = asyncHandler(async initiative => {
       phase_result[index].score = phase_score
       phase.score = phase_score
       
+      console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
+
       if (phase_responses_length == phase_criteria_item_length) {
         phase.status = "Completed"
       } else if (phase_responses_length == 0) {

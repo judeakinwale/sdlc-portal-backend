@@ -38,7 +38,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       phase = await Gate.findById(body.phase)
     } else if (req.params.id) {
       phase = await Gate.findById(existingInitiative.phase)
-      console.log(phase)
+      // console.log(phase)
     } else {
       phase = await Gate.findOne({initiativeType: initiativeType._id, order:1})
       body.phase = phase
@@ -112,7 +112,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   let deliveryPhaseDetails
   for (const [key, phase] of Object.entries(relatedPhases)) {
     let deliveryPhaseDetailsID = phase._id
-    if (phase.status == "Started") {
+    if (phase.status == "Started" || (phase.status == "Completed"  && !phase.has_violation)){
       deliveryPhaseDetails = await Phase.findById(deliveryPhaseDetailsID)
       break
     }
@@ -135,6 +135,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     initiativeType: initiativeType._id,
     gate: body.phase
   }).populate("gate")
+
+  if (!phaseDetails) {
+    phaseDetails = await Phase.findOne({
+      initiative: initiative._id,
+      initiativeType: initiativeType._id,
+      gate: initiative.phase
+    }).populate("gate")
+  }
 
   initiative.qualityStageGate = qualityStageGate
   initiative.qualityStageGateDetails = qualityStageGateDetails

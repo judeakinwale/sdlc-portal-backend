@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Staff = require("../models/Staff")
-// const upload = require("../config/multersetup");
+const upload = require("../config/multersetup");
 const {
   postUserDetails,
   getUser,
@@ -27,7 +27,7 @@ router.post("/photo", verifyToken, getUserDP); //get staff profile picture
 router.patch(
   "/documents",
   verifyToken,
-  // upload.array("documents", 5),
+  upload.array("documents", 5),
   uploadDocuments
 ); //upload documents
 
