@@ -19,6 +19,7 @@ const advancedResults = require("../middleware/advancedResults")
 router.post("/", postUserDetails); //register a new user
 router.get("/", verifyToken, getUser); //get authenticated user
 router.patch("/", verifyToken, updateUser); //update a user
+router.delete("/:id", verifyToken, authorize("HR" , "Admin"), deleteStaff); //delete a user
 router.post("/logout", logout); //log out authenticated user
 
 // router.patch("/userdp", verifyToken, upload.single("profilePic"), uploadDp);
@@ -33,7 +34,6 @@ router.patch(
 
 //Admin routes
 router.get("/all", advancedResults(Staff), getAllStaff); //get all staff"
-router.delete("/:id", verifyToken, authorize("HR" , "Admin"), deleteStaff); //delete a user
 router.get("/db/update", updateRelations); // update database relations
 
 module.exports = router;
