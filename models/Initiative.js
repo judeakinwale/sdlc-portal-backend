@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Initiative = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: [true, "Please enter a title"]
   },
   status: {
     type: String,
@@ -13,11 +13,12 @@ const Initiative = new mongoose.Schema({
   qualityAssuranceEngineer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Staff",
+    required: [true, "Select a Quality Assurance Engineer"]
   },
   type: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Type",
-    required: true,
+    required: [true, "Select an Initiative Type"]
   },
   qualityStageGate: {
     type: mongoose.Schema.Types.ObjectId,

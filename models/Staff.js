@@ -42,7 +42,7 @@ const StaffSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["HR", "Admin", "Manager", "Staff", "Team Lead"],
+    enum: ["HR", "Admin", "Manager", "Engineer", "Staff", "Team Lead"],
     default: "Staff",
   },
   isManager: {

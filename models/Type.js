@@ -1,9 +1,18 @@
 const mongoose = require('mongoose')
 const Gate = require('./Gate')
 
+/**
+ * Intiative Types:
+  • For Business solutions
+  • For Infrastructure
+  • For Security
+  • For Data & AI
+  • For Cloud
+ */
 const Type = new mongoose.Schema({
   title: {
     type: String,
+    required: [true, "Please enter a title"]
   },
   gates: {
     type: Array,
