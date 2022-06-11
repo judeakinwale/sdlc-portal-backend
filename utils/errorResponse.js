@@ -14,4 +14,17 @@ class ErrorResponseJSON {
   }
 }
 
-module.exports = {ErrorResponse, ErrorResponseJSON};
+class SuccessResponseJSON {
+  constructor(res, data={}, statusCode = 200, message) {
+    const payload = {
+      success: true,
+      count: data.length,
+      data: data,
+    };
+    if (!Array.isArray(data)) payload.count = undefined
+    if (message) payload.message = message;
+    return res.status(statusCode).json(payload);
+  }
+}
+
+module.exports = {ErrorResponse, ErrorResponseJSON, SuccessResponseJSON};

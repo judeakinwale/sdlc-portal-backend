@@ -7,7 +7,19 @@ const Response = require("../models/Response")
 
 
 // exports.allPhaseQPS = {} // likely to break
+exports.ConformanceLevel = asyncHandler(async phase => {
+  /**
+   * RAG : "Red", "Amber", "Green"
+   */
 
+  if (phase.score >= 70) {
+    return "Green"
+  } else if (phase.score >= 50) {
+    return "Amber"
+  } else {
+    return "Red"
+  }
+})
 
 exports.phaseQPS = asyncHandler(async initiative => {
   const phases = await Phase.find({initiative: initiative.id});

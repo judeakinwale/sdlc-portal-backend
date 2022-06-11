@@ -28,9 +28,10 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     qualityStageGate = await Gate.findById(body.qualityStageGate)
   } 
 
-  if (!("qualityAssuranceEngineer" in body)) {
-    body.qualityAssuranceEngineer = req.user
-  }
+  // // TODO: Comment code below if QA Manager is to assign a QA Engineer
+  // if (!("qualityAssuranceEngineer" in body)) {
+  //   body.qualityAssuranceEngineer = req.user
+  // }
 
   let phase
   try {
