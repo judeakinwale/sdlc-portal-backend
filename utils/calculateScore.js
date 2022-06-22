@@ -7,23 +7,34 @@ const Response = require("../models/Response")
 
 
 // exports.allPhaseQPS = {} // likely to break
-exports.ConformanceLevel = asyncHandler(async phase => {
+exports.conformanceStatus = asyncHandler(async initiative => {
   /**
    * RAG : "Red", "Amber", "Green"
    */
-
-  if (phase.score >= 70) {
-    return "Green"
-  } else if (phase.score >= 50) {
-    return "Amber"
-  } else {
-    return "Red"
+  const phases = await Phase.find({initiative: initiative.id});
+  initiative_score = 0
+  // count = 0
+  for (const [key, phase] of Object.entries(phases)) {
+    initiative_score += phase.score
+    // if (phase.score != 0) count += 1  
   }
+  let conformanceStatus = "Red"
+  if (initiative_score >= passScore) {
+    conformanceStatus = "Green"
+  } else if (initiative_score >= 50) {
+    conformanceStatus = "Amber"
+  } 
+  initiative.score = initiative_score
+  initiative.conformanceStatus = conformanceStatus
+  await initiative.save()
+
+  return conformanceStatus
 })
 
 exports.phaseQPS = asyncHandler(async initiative => {
   const phases = await Phase.find({initiative: initiative.id});
   const prefixes = await Prefix.find()
+  let passScore = initiative.passScore
   let phase_result = []
   let phase_criteria_item_length = 0
   let phase_responses_length = 0
@@ -89,10 +100,10 @@ exports.phaseQPS = asyncHandler(async initiative => {
         phase.status = "Started"
       }
       
-      if (phase.status == "Started" && phase_score < 50 ) {
+      if (phase.status == "Started" && phase_score < passScore ) {
         phase.has_violation = true
         // phase.status = "Undetermined"
-      } else if (phase.status == "Completed" && phase_score < 50) {
+      } else if (phase.status == "Completed" && phase_score < passScore) {
         phase.has_violation = true
         phase.status = "Undetermined"
       } else {
