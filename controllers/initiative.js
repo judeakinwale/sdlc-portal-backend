@@ -5,7 +5,7 @@ const Phase = require("../models/Phase")
 const Type = require("../models/Type")
 const {ErrorResponseJSON} = require("../utils/errorResponse")
 const {createOrUpdateInitiative} = require("../utils/initiativeUtils")
-const {phaseQPS} = require("../utils/calculateScore")
+const {phaseQPS, conformanceStatus} = require("../utils/calculateScore")
 const {updateAllSchema} = require("../utils/updateDetails")
 
 
@@ -14,13 +14,16 @@ const {updateAllSchema} = require("../utils/updateDetails")
 // @access   Private
 exports.createInitiative = asyncHandler(async (req, res, next) => {
   try {
-    await updateAllSchema()
+    // await updateAllSchema()
 
     // Create or update initiative
     const initiative = await createOrUpdateInitiative(req, res)
 
     // Test calculating the QPS score
     const tempQPS = await phaseQPS(initiative)
+
+    // Get Conformance Status
+    const status = await conformanceStatus(initiative)
 
     await initiative.save()
     
@@ -31,6 +34,7 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
       success: true,
       data: initiative,
       phase_dict: tempQPS,
+      status: status,
     })
   } catch (err) {
     return new ErrorResponseJSON(res, err.message, 500)
@@ -42,7 +46,7 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/initiative
 // @access   Private
 exports.getAllInitiatives = asyncHandler(async (req, res, next) => {
-  await updateAllSchema()
+  // await updateAllSchema()
   return res.status(200).json(res.advancedResults)
 })
 
@@ -52,7 +56,7 @@ exports.getAllInitiatives = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getInitiative = asyncHandler(async (req, res, next) => {
   try {
-    await updateAllSchema()
+    // await updateAllSchema()
 
     const initiative = await Initiative.findById(req.params.id).populate(
       'qualityAssuranceEngineer type qualityStageGate deliveryPhase phase'
@@ -76,7 +80,7 @@ exports.getInitiative = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.updateInitiative = asyncHandler(async (req, res, next) => {
   try {
-    await updateAllSchema()
+    // await updateAllSchema()
 
     // Create or update initiative
     const initiative = await createOrUpdateInitiative(req, res)
@@ -125,7 +129,7 @@ exports.deleteInitiative = asyncHandler(async (req, res, next) => {
 // @access   Private
 exports.getInitiativePhases = asyncHandler(async (req, res, next) => {
   try {
-    await updateAllSchema()
+    // await updateAllSchema()
     const phases = await Phase.find({initiative:req.params.id}).populate(
       'initiative initiativeType gate'
     )

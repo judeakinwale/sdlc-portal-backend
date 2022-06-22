@@ -295,6 +295,51 @@ exports.getAllStaff = asyncHandler(async (req, res, next) => {
 });
 
 
+// @desc    Get user
+// @route  GET /api/v1/auth/:id
+// @access   Private
+exports.getStaff = asyncHandler(async (req, res, next) => {
+  try {
+    const staff = await Staff.findById(req.params.id);
+
+    if (!staff) {
+      return new ErrorResponseJSON(res, "Staff not found!", 404)
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: staff
+    });
+  } catch (err) {
+    return new ErrorResponseJSON(res, err.message, 500)
+  }
+});
+
+
+// @desc    Update user
+// @route  PATCH /api/v1/auth/:id
+// @access   Private
+exports.updateStaff = asyncHandler(async (req, res, next) => {
+  try {
+    const staff = await Staff.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!staff) {
+      return new ErrorResponseJSON(res, "Staff not updated!", 404)
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: staff
+    });
+  } catch (err) {
+    return new ErrorResponseJSON(res, err.message, 500)
+  }
+});
+
+
 // @desc    Delete user
 // @route  DELETE /api/v1/auth/:id
 // @access   Private
@@ -303,9 +348,8 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
     const staff = await Staff.findByIdAndDelete(req.params.id);
 
     if (!staff) {
-      return new ErrorResponseJSON(res, "Staff not found", 404)
+      return new ErrorResponseJSON(res, "Staff not found!", 404)
     }
-    // const allStaff = await Staff.find().lean().populate("role");
 
     return res.status(200).json({
       success: true,
@@ -352,6 +396,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
 
 // @desc    Update database relations
 // @route  POST /api/v1/auth/update
