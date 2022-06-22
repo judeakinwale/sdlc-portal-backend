@@ -9,7 +9,7 @@ const Criterion = new mongoose.Schema({
   },
   title: {
     type: String,
-    enum: ["Entrance criteria", "High level objecjectives", "Exit criteria"],
+    // enum: ["Entrance criteria", "High level objecjectives", "Exit criteria"],
     required: true,
   },
   percentage: {

@@ -55,6 +55,15 @@ const Initiative = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  passScore: {
+    type: Number,
+    default: 70
+  },
+  conformanceStatus: {
+    type: String,
+    enum: ["Red", "Amber", "Green"],
+    default: "Red",
+  },
   createdAt: {
     type: Date,
     default: Date.now()
