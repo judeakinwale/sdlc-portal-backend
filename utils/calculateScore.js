@@ -32,7 +32,7 @@ exports.conformanceStatus = asyncHandler(async initiative => {
 })
 
 exports.phaseQPS = asyncHandler(async initiative => {
-  const phases = await Phase.find({initiative: initiative.id});
+  const phases = await Phase.find({initiative: initiative.id}).populate("status");
   const prefixes = await Prefix.find()
   let passScore = initiative.passScore
   let phase_result = []
@@ -93,19 +93,19 @@ exports.phaseQPS = asyncHandler(async initiative => {
       // console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
 
       if (phase_responses_length == phase_criteria_item_length) {
-        phase.status = "Completed"
+        phase.status.title = "Completed"
       } else if (phase_responses_length == 0) {
-        phase.status = "Pending"
+        phase.status.title = "Pending"
       } else {
-        phase.status = "Started"
+        phase.status.title = "Started"
       }
       
-      if (phase.status == "Started" && phase_score < passScore ) {
+      if (phase.status.title == "Started" && phase_score < passScore ) {
         phase.has_violation = true
-        // phase.status = "Undetermined"
-      } else if (phase.status == "Completed" && phase_score < passScore) {
+        // phase.status.title = "Undetermined"
+      } else if (phase.status.title == "Completed" && phase_score < passScore) {
         phase.has_violation = true
-        phase.status = "Undetermined"
+        phase.status.title = "Undetermined"
       } else {
         phase.has_violation = false
       }

@@ -33,10 +33,15 @@ const Phase = new mongoose.Schema({
   documents: {
     type: String,
   },
+  // status: {
+  //   type: String,
+  //   enum: ["Pending", "Started", "Undetermined", "Completed"],
+  //   default: "Pending"
+  // },
   status: {
-    type: String,
-    enum: ["Pending", "Started", "Undetermined", "Completed"],
-    default: "Pending"
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Status",
+    required: true,
   },
   createdAt: {
     type: Date,

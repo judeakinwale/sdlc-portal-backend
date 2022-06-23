@@ -5,10 +5,15 @@ const Initiative = new mongoose.Schema({
     type: String,
     required: [true, "Please enter a title"]
   },
+  // status: {
+  //   type: String,
+  //   enum: ["Planned", "Pre-Analysis", "Active", "On-hold", "Cancelled", "PO Hold", "Undetermined", "Shelf-Ready", "Operational", "Agile", "Deployed"],
+  //   default: "Undetermined"
+  // },
   status: {
-    type: String,
-    enum: ["Planned", "Pre-Analysis", "Active", "On-hold", "Cancelled", "PO Hold", "Undetermined", "Shelf-Ready", "Operational", "Agile", "Deployed"],
-    default: "Undetermined"
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Status",
+    required: true,
   },
   qualityAssuranceEngineer: {
     type: mongoose.Schema.Types.ObjectId,

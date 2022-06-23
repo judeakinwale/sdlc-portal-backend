@@ -85,13 +85,13 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     }
   }
 
-  const relatedPhases = await Phase.find({initiative: initiative._id}).sort("order").populate("gate")
+  const relatedPhases = await Phase.find({initiative: initiative._id}).sort("order").populate("gate status")
 
   // Get quality stage gate details (violations: true, status: "Undetermined")
   let qualityStageGateDetails
   for (const [key, phase] of Object.entries(relatedPhases)) {
     
-    if (phase.has_violation == true && phase.status == "Undetermined") {
+    if (phase.has_violation == true && phase.status.title == "Undetermined") {
       qualityStageGateDetails = await Phase.findById(phase._id)
       break
     }
@@ -113,7 +113,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   let deliveryPhaseDetails
   for (const [key, phase] of Object.entries(relatedPhases)) {
     let deliveryPhaseDetailsID = phase._id
-    if (phase.status == "Started" || (phase.status == "Completed"  && !phase.has_violation)){
+    if (phase.status.title == "Started" || (phase.status.title == "Completed"  && !phase.has_violation)){
       deliveryPhaseDetails = await Phase.findById(deliveryPhaseDetailsID)
       break
     }
