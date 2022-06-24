@@ -35,3 +35,18 @@ exports.titleCase = str => {
     return word.replace(word[0], word[0].toUpperCase());
   }).join(' ');
 }
+
+// Filter model1 queryset by instances of model2
+exports.filterQuerysetByQuerysetInstances = async (req, model1, model2, query = {}, _type = "status") => {
+  const payload = {}
+  const queryset2 = await model2.find()
+
+  for (const [key, instance1] of Object.entries(queryset2)) {
+    if (_type == "type") query.type = instance1._id
+    if (_type == "status") query.status = instance1._id
+
+    const queryset1 = await model1.find({...query}).find({...req.query})
+    payload[`${instance1.title}`] = queryset1
+  }
+  return payload
+}

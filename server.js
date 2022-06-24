@@ -24,6 +24,7 @@ const phase  = require("./routes/phase")
 const prefix  = require("./routes/prefix")
 const response  = require("./routes/response")
 const type  = require("./routes/type")
+const log  = require("./routes/log")
 
 // configure express
 const app = express();
@@ -68,6 +69,7 @@ app.use("/api/v1/phase", phase)
 app.use("/api/v1/prefix", prefix)
 app.use("/api/v1/response", response)
 app.use("/api/v1/type", type)
+app.use("/api/v1/log", log)
 
 app.use(errorHandler);
 
