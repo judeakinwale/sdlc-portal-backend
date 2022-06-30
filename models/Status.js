@@ -22,6 +22,26 @@ const Status = new mongoose.Schema({
     type: String,
     required: [true, "Please enter a title"]
   },
-})
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
+
+// Reverse Populate with Virtuals
+Status.virtual("initiatives", {
+  ref: "Initiative",
+  localField: "_id",
+  foreignField: "status",
+  justOne: false,
+});
+
+Status.virtual("phases", {
+  ref: "Phase",
+  localField: "_id",
+  foreignField: "status",
+  justOne: false,
+});
+
 
 module.exports = mongoose.model("Status", Status);

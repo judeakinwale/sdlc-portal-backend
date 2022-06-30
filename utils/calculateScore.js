@@ -7,7 +7,7 @@ const Response = require("../models/Response")
 
 
 // exports.allPhaseQPS = {} // likely to break
-exports.conformanceStatus = asyncHandler(async initiative => {
+exports.conformanceStatus = async initiative => {
   /**
    * RAG : "Red", "Amber", "Green"
    */
@@ -29,9 +29,9 @@ exports.conformanceStatus = asyncHandler(async initiative => {
   await initiative.save()
 
   return conformanceStatus
-})
-
-exports.phaseQPS = asyncHandler(async initiative => {
+}
+this.conformanceStatus()
+exports.phaseQPS = async initiative => {
   const phases = await Phase.find({initiative: initiative.id}).populate("status");
   const prefixes = await Prefix.find()
   let passScore = initiative.passScore
@@ -120,4 +120,4 @@ exports.phaseQPS = asyncHandler(async initiative => {
     return phase_result
   }
   
-});
+};

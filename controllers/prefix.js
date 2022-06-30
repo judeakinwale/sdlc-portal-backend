@@ -1,31 +1,22 @@
 const asyncHandler = require("../middleware/async")
 const Prefix = require("../models/Prefix")
-const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
 // @desc    Create Prefix
 // @route  POST /api/v1/prefix
 // @access   Private
 exports.createPrefix = asyncHandler(async (req, res, next) => {
-  try {
-    const existingPrefix = await Prefix.find({prefix: req.body.prefix})
-
-    if (existingPrefix.length > 0) {
-      return new ErrorResponseJSON(res, "This prefix already exists, update it instead!", 400)
-    }
-
-    const prefix = await Prefix.create(req.body)
-
-    if (!prefix) {
-      return new ErrorResponseJSON(res, "Prefix not created!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: prefix,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const existingPrefix = await Prefix.find({prefix: req.body.prefix})
+  if (existingPrefix.length > 0) {
+    return new ErrorResponseJSON(res, "This prefix already exists, update it instead!", 400)
   }
+
+  const prefix = await Prefix.create(req.body)
+  if (!prefix) {
+    return new ErrorResponseJSON(res, "Prefix not created!", 404)
+  }
+  return new SuccessResponseJSON(res, prefix, 201)
 })
 
 
@@ -41,19 +32,11 @@ exports.getAllPrefixs = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/prefix/:id
 // @access   Private
 exports.getPrefix = asyncHandler(async (req, res, next) => {
-  try {
-    const prefix = await Prefix.findById(req.params.id)
-
-    if (!prefix) {
-      return new ErrorResponseJSON(res, "Prefix not found!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: prefix,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const prefix = await Prefix.findById(req.params.id)
+  if (!prefix) {
+    return new ErrorResponseJSON(res, "Prefix not found!", 404)
   }
+  return new SuccessResponseJSON(res, prefix)
 })
 
 
@@ -61,22 +44,14 @@ exports.getPrefix = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/prefix/:id
 // @access   Private
 exports.updatePrefix = asyncHandler(async (req, res, next) => {
-  try {
-    const prefix = await Prefix.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-
-    if (!prefix) {
-      return new ErrorResponseJSON(res, "Prefix not updated!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: prefix,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const prefix = await Prefix.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+  if (!prefix) {
+    return new ErrorResponseJSON(res, "Prefix not updated!", 404)
   }
+  return new SuccessResponseJSON(res, prefix)
 })
 
 
@@ -84,17 +59,9 @@ exports.updatePrefix = asyncHandler(async (req, res, next) => {
 // @route  DELETE /api/v1/prefix/:id
 // @access   Private
 exports.deletePrefix = asyncHandler(async (req, res, next) => {
-  try {
-    const prefix = await Prefix.findByIdAndDelete(req.params.id)
-    
-    if (!prefix) {
-      return new ErrorResponseJSON(res, "Prefix not found!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: prefix,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const prefix = await Prefix.findByIdAndDelete(req.params.id)
+  if (!prefix) {
+    return new ErrorResponseJSON(res, "Prefix not found!", 404)
   }
+  return new SuccessResponseJSON(res, prefix)
 })

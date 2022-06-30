@@ -1,33 +1,43 @@
 const mongoose = require('mongoose')
-const Item = require("./Item")
 
+/**
+ * "Entrance criteria", 
+ * "High level objecjectives", 
+ * "Exit criteria",
+ */
 const Criterion = new mongoose.Schema({
   gate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Gate",
-    required: true,
+    required: [true, "Please select a Gate"],
   },
   title: {
     type: String,
-    // enum: ["Entrance criteria", "High level objecjectives", "Exit criteria"],
     required: true,
   },
   percentage: {
     type: Number,
     required: true,
   },
-  items: {
-    type: Array,
-  },
-})
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
 
-Criterion.pre("save", async function () {
-  this.items = await this.getCriterionItems()
-})
+Criterion.pre("remove", async function (next) {
+  console.log("Deleting Criteria Items ...".brightblue);
+  await this.model("Item").deleteMany({criterion: this._id});
+  console.log("Criteria Items Deleted".bgRed);
+  next();
+});
 
-Criterion.methods.getCriterionItems = async function() {
-  const items = await Item.find({criterion: this.id})
-  return items
-}
+// Reverse Populate with Virtuals
+Criterion.virtual("items", {
+  ref: "Item",
+  localField: "_id",
+  foreignField: "criterion",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Criterion", Criterion);

@@ -1,15 +1,11 @@
 const mongoose = require('mongoose')
 
+
 const Initiative = new mongoose.Schema({
   title: {
     type: String,
     required: [true, "Please enter a title"]
   },
-  // status: {
-  //   type: String,
-  //   enum: ["Planned", "Pre-Analysis", "Active", "On-hold", "Cancelled", "PO Hold", "Undetermined", "Shelf-Ready", "Operational", "Agile", "Deployed"],
-  //   default: "Undetermined"
-  // },
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
@@ -79,6 +75,36 @@ const Initiative = new mongoose.Schema({
   requesterEmail: {
     type: String,
   },
-})
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
+
+Initiative.pre("remove", async function (next) {
+  console.log("Deleting Phases ...".brightblue);
+  await this.model("Phase").deleteMany({initiative: this._id});
+  console.log("Phases Deleted".bgRed);
+
+  console.log("Deleting Responses ...".brightblue);
+  await this.model("Response").deleteMany({initiative: this._id});
+  console.log("Responses Deleted".bgRed);
+  next();
+});
+
+// Reverse Populate with Virtuals
+Initiative.virtual("phases", {
+  ref: "Phase",
+  localField: "_id",
+  foreignField: "initiative",
+  justOne: false,
+});
+
+Initiative.virtual("responses", {
+  ref: "Response",
+  localField: "_id",
+  foreignField: "initiative",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Initiative", Initiative);

@@ -15,7 +15,7 @@ class ErrorResponseJSON {
 }
 
 class SuccessResponseJSON {
-  constructor(res, data={}, statusCode = 200, message) {
+  constructor(res, data = {}, statusCode = 200, message) {
     const payload = {
       success: true,
       count: data.length,

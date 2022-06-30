@@ -3,7 +3,7 @@ const Gate = require("../models/Gate");
 const Initiative = require("../models/Initiative")
 const Phase = require("../models/Phase");
 const Type = require("../models/Type")
-const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   const {user, body} = req

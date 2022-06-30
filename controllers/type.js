@@ -1,31 +1,25 @@
 const asyncHandler = require("../middleware/async")
 const Type = require("../models/Type")
-const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+
+
+exports.popoulateType = {path: "gates phases"}
 
 
 // @desc    Create Initiative Type
 // @route  POST /api/v1/type
 // @access   Private
 exports.createType = asyncHandler(async (req, res, next) => {
-  try {
-    const existingTypeTitle = await Type.find({title: req.body.title})
-
-    if (existingTypeTitle.length > 0) {
-      return new ErrorResponseJSON(res, "This type already exists, update it instead!", 400)
-    }
-
-    const type = await Type.create(req.body)
-
-    if (!type) {
-      return new ErrorResponseJSON(res, "Type not created!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: type,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const existingTypeTitle = await Type.find({title: req.body.title})
+  if (existingTypeTitle.length > 0) {
+    return new ErrorResponseJSON(res, "This type already exists, update it instead!", 400)
   }
+
+  const type = await Type.create(req.body)
+  if (!type) {
+    return new ErrorResponseJSON(res, "Type not created!", 404)
+  }
+  return new SuccessResponseJSON(res, type, 201)
 })
 
 
@@ -41,19 +35,11 @@ exports.getAllTypes = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/type/:id
 // @access   Private
 exports.getType = asyncHandler(async (req, res, next) => {
-  try {
     const type = await Type.findById(req.params.id)
-
     if (!type) {
       return new ErrorResponseJSON(res, "Type not found!", 404)
     }
-    res.status(200).json({
-      success: true,
-      data: type,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    return new SuccessResponseJSON(res, type)
 })
 
 
@@ -61,22 +47,14 @@ exports.getType = asyncHandler(async (req, res, next) => {
 // @route  UPDATE /api/v1/type/:id
 // @access   Private
 exports.updateType = asyncHandler(async (req, res, next) => {
-  try {
     const type = await Type.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     })
-
     if (!type) {
       return new ErrorResponseJSON(res, "Type not updated!", 404)
     }
-    res.status(200).json({
-      success: true,
-      data: type,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    return new SuccessResponseJSON(res, type)
 })
 
 
@@ -84,17 +62,9 @@ exports.updateType = asyncHandler(async (req, res, next) => {
 // @route  DELETE /api/v1/type
 // @access   Private
 exports.deleteType = asyncHandler(async (req, res, next) => {
-  try {
     const type = await Type.findByIdAndDelete(req.params.id)
-    
     if (!type) {
       return new ErrorResponseJSON(res, "Type not found!", 404)
     }
-    res.status(200).json({
-      success: true,
-      data: type,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    return new SuccessResponseJSON(res, type)
 })

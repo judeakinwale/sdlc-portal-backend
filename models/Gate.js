@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Criterion = require("./Criterion")
 
 /**
  * Initiative Types with relevant Gates:
@@ -27,18 +26,25 @@ const Gate = new mongoose.Schema({
     type: String,
     required: true,
   },
-  criteria: {
-    type: Array,
-  },
-})
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
 
-Gate.pre("save", async function () {
-  this.criteria = await this.getCriteria()
-})
+Gate.pre("remove", async function (next) {
+  console.log("Deleting Criteria ...".brightblue);
+  await this.model("Criterion").deleteMany({gate: this._id});
+  console.log("Criteria Deleted".bgRed);
+  next();
+});
 
-Gate.methods.getCriteria = async function() {
-  const criteria = await Criterion.find({gate: this.id})
-  return criteria
-}
+// Reverse Populate with Virtuals
+Gate.virtual("criteria", {
+  ref: "Criterion",
+  localField: "_id",
+  foreignField: "gate",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Gate", Gate);

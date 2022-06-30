@@ -12,7 +12,7 @@ const {
   uploadDocuments,
   getUserDP,
   logout,
-  updateRelations,
+  // updateRelations,
 } = require("../controllers/auth");
 const {verifyToken, authorize} = require("../middleware/auth");
 const advancedResults = require("../middleware/advancedResults");
@@ -26,7 +26,7 @@ router.post("/photo", verifyToken, getUserDP); //get authenticated staff's profi
 router.patch("/documents", verifyToken, upload.array("documents", 5), uploadDocuments); //upload documents
 //Administrative / Setup
 router.get("/all", verifyToken, authorize("HR", "Admin", "Manager"), advancedResults(Staff), getAllStaff); //get all staff"
-router.get("/db/update", updateRelations); // update database relations
+// router.get("/db/update", updateRelations); // update database relations // depreciated
 router.get("/:id", verifyToken, authorize("HR", "Admin", "Manager"), getStaff); //get a user
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updateStaff); //update a user
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deleteStaff); //delete a user

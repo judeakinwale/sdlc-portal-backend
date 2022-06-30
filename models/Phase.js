@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const Phase = new mongoose.Schema({
   initiative: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,11 +34,6 @@ const Phase = new mongoose.Schema({
   documents: {
     type: String,
   },
-  // status: {
-  //   type: String,
-  //   enum: ["Pending", "Started", "Undetermined", "Completed"],
-  //   default: "Pending"
-  // },
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
@@ -47,6 +43,25 @@ const Phase = new mongoose.Schema({
     type: Date,
     default: Date.now()
   },
-})
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
+
+Phase.pre("remove", async function (next) {
+  console.log("Deleting Responses ...".brightblue);
+  await this.model("Response").deleteMany({phase: this._id});
+  console.log("Responses Deleted".bgRed);
+  next();
+});
+
+// Reverse Populate with Virtuals
+Phase.virtual("responses", {
+  ref: "Response",
+  localField: "_id",
+  foreignField: "phase",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Phase", Phase);

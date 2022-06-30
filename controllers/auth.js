@@ -1,20 +1,12 @@
 const asyncHandler = require("../middleware/async")
 const Staff = require("../models/Staff");
 const Photo = require("../models/Photo")
-// const Calibration = require("../models/Calibration")
-// const cloudinary = require("cloudinary").v2;
-// const cloudinarySetup = require("../config/cloudinarysetup");
 const fs = require("fs");
 const axios = require("axios");
 const generateToken = require("../helpers/generateToken");
-// const dotenv = require("dotenv").config();
-// const { strToBase64 } = require("../utils/generic");
-// const open = require("open");
-const {ErrorResponseJSON} = require("../utils/errorResponse")
-const {updateAllSchema} = require("../utils/updateDetails")
+const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
-//Register new users and send a token
 // @desc    Register new user / login existing user and send token
 // @route  GET /api/v1/auth/logout
 // @access   Private
@@ -101,16 +93,8 @@ exports.postUserDetails = async (req, res, next) => {
 // @route  GET /api/v1/auth/
 // @access   Private
 exports.getUser = asyncHandler(async (req, res, next) => {
-  try {
     const staff = await Staff.findById(req.user._id).populate("manager")
-
-    res.status(200).json({
-      success: true,
-      data: staff
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    return new SuccessResponseJSON(res, staff)
 });
 
 
@@ -118,95 +102,15 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/auth/
 // @access   Private
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  try {
     const staff = await Staff.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
     });
-
     if (!staff) {
       return new ErrorResponseJSON(res, "Staff not found", 400)
     }
-    res.status(200).json({
-      success: true,
-      data: staff,
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    return new SuccessResponseJSON(res, staff)
 });
-
-
-// // @desc    Upload Profile Picture
-// // @route  PATCH /api/v1/auth/photo
-// // @access   Private
-// exports.uploadDp = async (req, res, next) => {
-//   try {
-//     const { file, user } = req;
-
-//     const imageSizeLimit = 5 * 1024 * 1024; // 5Mb
-
-//     if (!file || file.size <= 0) {
-//       return res.status(400).json({
-//         success: false,
-//         msg: "Avatar field is required",
-//       });
-//     }
-
-//     if (file.size >= imageSizeLimit) {
-//       return res.status(400).json({
-//         success: false,
-//         msg: `Uploaded image size limit is ${imageSizeLimit / 1024 / 1024}Mb`,
-//       });
-//     }
-
-//     //check if the file is an image
-//     if (!file.mimetype.startsWith("image")) {
-//       fs.unlinkSync(file.path); //delete the file from memory if it's not an image
-
-//       return res.status(400).json({
-//         success: false,
-//         msg: "Uploaded file is not an image",
-//       });
-//     }
-
-//     // // upload file to cloud storage
-//     // await cloudinarySetup();
-//     // const uploadedImage = await cloudinary.uploader.upload(file.path, {
-//     //   eager: [
-//     //     { height: 100, width: 100, crop: "fill" },
-//     //     { height: 150, width: 150, crop: "fill" },
-//     //   ],
-//     // });
-
-//     // if (!uploadedImage) {
-//     //   return res.status(500).json({
-//     //     success: false,
-//     //     msg: "Something went wrong",
-//     //   });
-//     // }
-
-//     //convert the image to base64
-//     const base64Image = strToBase64(uploadedImage.eager[0].url);
-
-//     await Staff.findByIdAndUpdate(
-//       user,
-//       {
-//         photo: base64Image,
-//       },
-//       {
-//         new: true,
-//         runValidators: true,
-//       }
-//     );
-//     return res.status(200).json({
-//       success: true,
-//       photo: base64Image,
-//     });
-//   } catch (err) {
-//     return new ErrorResponseJSON(res, err.message, 500)
-//   }
-// };
 
 
 // @desc    Get Authenticated User's Profile Picture (using access token)
@@ -265,25 +169,20 @@ exports.getUserDP = async (req, res, next) => {
 // @route  PATCH /api/v1/auth/documents
 // @access   Private
 exports.uploadDocuments = async (req, res, next) => {
-  try {
     const { files, user } = req;
 
     if (!files || files.size <= 0) {
       return new ErrorResponseJSON(res, "No file was provided", 400)
     }
 
-    const currentUser = await Staff.findByIdAndUpdate(req.user._id, { files: files }, {
+    const staff = await Staff.findByIdAndUpdate(req.user._id, { files: files }, {
       new: true,
       runValidators: true
     });
-
-    res.status(200).json({
-      success: true,
-      data: currentUser
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
+    if (!staff) {
+      return new ErrorResponseJSON(res, "Staff not found!", 404)
+    }
+    return new SuccessResponseJSON(res, staff)
 };
 
 
@@ -299,20 +198,11 @@ exports.getAllStaff = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/auth/:id
 // @access   Private
 exports.getStaff = asyncHandler(async (req, res, next) => {
-  try {
-    const staff = await Staff.findById(req.params.id);
-
-    if (!staff) {
-      return new ErrorResponseJSON(res, "Staff not found!", 404)
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: staff
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const staff = await Staff.findById(req.params.id);
+  if (!staff) {
+    return new ErrorResponseJSON(res, "Staff not found!", 404)
   }
+  return new SuccessResponseJSON(res, staff)
 });
 
 
@@ -320,23 +210,14 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/auth/:id
 // @access   Private
 exports.updateStaff = asyncHandler(async (req, res, next) => {
-  try {
-    const staff = await Staff.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!staff) {
-      return new ErrorResponseJSON(res, "Staff not updated!", 404)
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: staff
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const staff = await Staff.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!staff) {
+    return new ErrorResponseJSON(res, "Staff not updated!", 404)
   }
+  return new SuccessResponseJSON(res, staff)
 });
 
 
@@ -344,22 +225,11 @@ exports.updateStaff = asyncHandler(async (req, res, next) => {
 // @route  DELETE /api/v1/auth/:id
 // @access   Private
 exports.deleteStaff = asyncHandler(async (req, res, next) => {
-  try {
-    const staff = await Staff.findByIdAndDelete(req.params.id);
-
-    if (!staff) {
-      return new ErrorResponseJSON(res, "Staff not found!", 404)
-    }
-
-    return res.status(200).json({
-      success: true,
-      // msg: "Staff deleted",
-      // data: allStaff,
-      data: {}
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const staff = await Staff.findByIdAndDelete(req.params.id);
+  if (!staff) {
+    return new ErrorResponseJSON(res, "Staff not found!", 404)
   }
+  return new SuccessResponseJSON(res)
 });
 
 
@@ -367,19 +237,11 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/auth/photo/:id
 // @access   Private
 exports.getPhoto = asyncHandler(async (req, res, next) => {
-  try {
-    const photo = await Photo.findById(req.params.id);
-
-    if (!photo) {
-      return new ErrorResponseJSON(res, "Photo not found", 404)
-    }
-    return res.status(200).json({
-      success: true,
-      data: photo,
-    });
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const photo = await Photo.findById(req.params.id);
+  if (!photo) {
+    return new ErrorResponseJSON(res, "Photo not found", 404)
   }
+  return new SuccessResponseJSON(res, photo)
 });
 
 
@@ -391,24 +253,15 @@ exports.logout = asyncHandler(async (req, res, next) => {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
-  res.status(200).json({
-    success: true,
-    data: {},
-  });
+  return new SuccessResponseJSON(res)
 });
 
 
+// Depreciated
 // @desc    Update database relations
 // @route  POST /api/v1/auth/update
 // @access   Private
 exports.updateRelations = asyncHandler(async (req, res, next) => {
-  try {
-    await updateAllSchema()
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
-  }
-  res.status(200).json({
-    success: true,
-    data: {},
-  });
+  // await updateAllSchema()
+  return new SuccessResponseJSON(res)
 });

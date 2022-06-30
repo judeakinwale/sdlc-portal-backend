@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const StaffSchema = new mongoose.Schema({
+
+const Staff = new mongoose.Schema({
   fullname: {
     type: String,
   },
@@ -92,6 +93,25 @@ const StaffSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
 });
 
-module.exports = mongoose.model("Staff", StaffSchema);
+Staff.pre("remove", async function (next) {
+  console.log("Deleting Responses ...".brightblue);
+  await this.model("Response").deleteMany({phase: this._id});
+  console.log("Responses Deleted".bgRed);
+  next();
+});
+
+// Reverse Populate with Virtuals
+Staff.virtual("responses", {
+  ref: "Response",
+  localField: "_id",
+  foreignField: "phase",
+  justOne: false,
+});
+
+module.exports = mongoose.model("Staff", Staff);

@@ -1,33 +1,28 @@
 const asyncHandler = require("../middleware/async")
 const Status = require("../models/Status")
 const {titleCase} = require("../utils/updateDetails")
-const {ErrorResponseJSON} = require("../utils/errorResponse")
+const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+
+
+// exports.populateStatus = {path: "phases initiatives"}
 
 
 // @desc    Create Status
 // @route  POST /api/v1/status
 // @access   Private
 exports.createStatus = asyncHandler(async (req, res, next) => {
-  try {
-    req.body.title = titleCase(req.body.title)
-    const existingStatus = await Status.find({title: req.body.title})
+  req.body.title = titleCase(req.body.title)
+  const existingStatus = await Status.find({title: req.body.title})
 
-    if (existingStatus.length > 0) {
-      return new ErrorResponseJSON(res, "This status already exists, update it instead!", 400)
-    }
-
-    const status = await Status.create(req.body)
-
-    if (!status) {
-      return new ErrorResponseJSON(res, "Status not created!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: status,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  if (existingStatus.length > 0) {
+    return new ErrorResponseJSON(res, "This status already exists, update it instead!", 400)
   }
+
+  const status = await Status.create(req.body)
+  if (!status) {
+    return new ErrorResponseJSON(res, "Status not created!", 404)
+  }
+  return new SuccessResponseJSON(res, status, 201)
 })
 
 
@@ -43,19 +38,11 @@ exports.getAllStatuss = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/status/:id
 // @access   Private
 exports.getStatus = asyncHandler(async (req, res, next) => {
-  try {
-    const status = await Status.findById(req.params.id)
-
-    if (!status) {
-      return new ErrorResponseJSON(res, "Status not found!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: status,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const status = await Status.findById(req.params.id)
+  if (!status) {
+    return new ErrorResponseJSON(res, "Status not found!", 404)
   }
+  return new SuccessResponseJSON(res, status)
 })
 
 
@@ -63,22 +50,14 @@ exports.getStatus = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/status/:id
 // @access   Private
 exports.updateStatus = asyncHandler(async (req, res, next) => {
-  try {
-    const status = await Status.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-
-    if (!status) {
-      return new ErrorResponseJSON(res, "Status not updated!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: status,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const status = await Status.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+  if (!status) {
+    return new ErrorResponseJSON(res, "Status not updated!", 404)
   }
+  return new SuccessResponseJSON(res, status)
 })
 
 
@@ -86,17 +65,9 @@ exports.updateStatus = asyncHandler(async (req, res, next) => {
 // @route  DELETE /api/v1/status/:id
 // @access   Private
 exports.deleteStatus = asyncHandler(async (req, res, next) => {
-  try {
-    const status = await Status.findByIdAndDelete(req.params.id)
-    
-    if (!status) {
-      return new ErrorResponseJSON(res, "Status not found!", 404)
-    }
-    res.status(200).json({
-      success: true,
-      data: status,
-    })
-  } catch (err) {
-    return new ErrorResponseJSON(res, err.message, 500)
+  const status = await Status.findByIdAndDelete(req.params.id)
+  if (!status) {
+    return new ErrorResponseJSON(res, "Status not found!", 404)
   }
+  return new SuccessResponseJSON(res, status)
 })
