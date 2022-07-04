@@ -11,7 +11,7 @@ exports.conformanceStatus = async initiative => {
   /**
    * RAG : "Red", "Amber", "Green"
    */
-  const phases = await Phase.find({initiative: initiative.id});
+  const phases = await Phase.find({initiative: initiative._id});
   initiative_score = 0
   // count = 0
   for (const [key, phase] of Object.entries(phases)) {
@@ -30,9 +30,9 @@ exports.conformanceStatus = async initiative => {
 
   return conformanceStatus
 }
-this.conformanceStatus()
+
 exports.phaseQPS = async initiative => {
-  const phases = await Phase.find({initiative: initiative.id}).populate("status");
+  const phases = await Phase.find({initiative: initiative._id}).populate("status");
   const prefixes = await Prefix.find()
   let passScore = initiative.passScore
   let phase_result = []

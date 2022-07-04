@@ -6,7 +6,7 @@ class ErrorResponse extends Error {
 }
 
 class ErrorResponseJSON {
-  constructor(res, message, statusCode) {
+  constructor(res, message, statusCode = 404) {
     return res.status(statusCode).json({
       success: false,
       message: message
