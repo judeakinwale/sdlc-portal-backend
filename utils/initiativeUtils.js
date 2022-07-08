@@ -8,6 +8,10 @@ const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse
 exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   const {user, body} = req
 
+  if (!req.body.serialNumber) {
+    req.body.serialNumber = this.generateQASerialNumber()
+  }
+
   let existingInitiative
   let initiativeType
 
@@ -155,3 +159,18 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
 
   return initiative
 })
+
+exports.generateQASerialNumber = async (prefix = "LBAN", padding = 4, sep = " ", startNum = 1) => {
+  let numStr = (startNum).toString().padStart(padding, "0")
+  let serial = `${prefix}${sep}${numStr}`
+  try {
+    const initiative = await Initiative.findOne().sort("-serialNumber")
+    let maxSerial = initiative.serialNumber
+    let oldNum = parseInt(maxSerial.split(prefix)[1])
+    let newNumStr = (oldNum + 1).toString().padStart(padding, "0")
+    serial = `${prefix}${sep}${newNumStr}`
+  } catch (err) {
+    console.log(`There was an error generating a serial number, default serial number - ${serial} used.\n`, `Error: ${err.message}`)
+  }
+  return serial
+}

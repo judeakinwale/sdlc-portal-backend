@@ -2,6 +2,12 @@ const mongoose = require('mongoose')
 
 
 const Initiative = new mongoose.Schema({
+  // QA Serial Number
+  serialNumber: {
+    type: String,
+    required: [true, "Please enter a serial number"],
+    unique: true,
+  },
   title: {
     type: String,
     required: [true, "Please enter a title"]
@@ -9,7 +15,7 @@ const Initiative = new mongoose.Schema({
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Status",
-    required: true,
+    required: [true, "Select a status"],
   },
   qualityAssuranceEngineer: {
     type: mongoose.Schema.Types.ObjectId,
