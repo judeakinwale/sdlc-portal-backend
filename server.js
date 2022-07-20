@@ -96,7 +96,7 @@ app.use(errorHandler);
 app.use((req, res) => {
   res.status(400).json({
     success: false,
-    message: 'Documentation: https://documenter.getpostman.com/view/13259025/UzQyrP4c!'
+    message: 'Documentation: https://documenter.getpostman.com/view/13259025/UzQyrP4c'
   });
 });
 
