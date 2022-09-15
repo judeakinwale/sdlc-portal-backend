@@ -78,7 +78,7 @@ exports.postUserDetails = async (req, res, next) => {
       success: true,
       msg: "Staff successfuly added",
       token,
-      data: newStaff,
+      // data: newStaff,
     });
   } catch (err) {
     if (err.response.status === 401) {
