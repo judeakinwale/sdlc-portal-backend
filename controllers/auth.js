@@ -10,7 +10,7 @@ const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse
 // @desc    Register new user / login existing user and send token
 // @route  GET /api/v1/auth/logout
 // @access   Private
-exports.postUserDetails = async (req, res, next) => {
+exports.postUserDetails = asyncHandler(async (req, res, next) => {
   const { accessToken } = req.body;
 
   if (!accessToken) {
@@ -86,7 +86,7 @@ exports.postUserDetails = async (req, res, next) => {
     }
     return res.status(500).json({ success: false, msg: err.message });
   }
-};
+});
 
 
 // @desc    Get authenticated user details
@@ -116,7 +116,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 // @desc    Get Authenticated User's Profile Picture (using access token)
 // @route  POST /api/v1/auth/photo
 // @access   Private
-exports.getUserDP = async (req, res, next) => {
+exports.getUserDP = asyncHandler(async (req, res, next) => {
   const { accessToken } = req.body;
   if (!accessToken) {
     return res
@@ -162,13 +162,13 @@ exports.getUserDP = async (req, res, next) => {
   } catch (err) {
     return new ErrorResponseJSON(res, err.message, 500)
   }
-};
+});
 
 
 // @desc    Upload Documents for Authenticated User
 // @route  PATCH /api/v1/auth/documents
 // @access   Private
-exports.uploadDocuments = async (req, res, next) => {
+exports.uploadDocuments = asyncHandler(async (req, res, next) => {
     const { files, user } = req;
 
     if (!files || files.size <= 0) {
@@ -183,7 +183,7 @@ exports.uploadDocuments = async (req, res, next) => {
       return new ErrorResponseJSON(res, "Staff not found!", 404)
     }
     return new SuccessResponseJSON(res, staff)
-};
+});
 
 
 // @desc    Get all staff
