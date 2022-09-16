@@ -75,6 +75,7 @@ app.use("/api/v1/type", type)
 app.use("/api/v1/log", log)
 
 // app.use(errorHandler);
+app.use(errorHandler);
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');
@@ -90,7 +91,6 @@ app.get('/*', function(req, res) {
   }
 });
 
-app.use(errorHandler);
 
 // Error handling
 app.use((req, res) => {

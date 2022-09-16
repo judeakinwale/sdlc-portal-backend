@@ -35,10 +35,17 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
   responseType: "arraybuffer",
   };
 
-  const photo = await axios(photoConfig); //get user data from active directory
-  const avatar = new Buffer.from(photo.data, "binary").toString("base64");
+  // try {
+  //   const photo = await axios(photoConfig); //get user data from active directory
+  //   const avatar = new Buffer.from(photo.data, "binary").toString("base64");
+  // } catch (err) {
+  //   return res.status(401).json({ success: false, msg: "Invalid login details, try again later" });
+  // }
 
   try {
+    const photo = await axios(photoConfig); //get user data from active directory
+    const avatar = new Buffer.from(photo.data, "binary").toString("base64");
+
     const { data } = await axios(config); //get user data from active directory
 
     const checkEmail = data.mail.split("@"); //split the email address
@@ -81,8 +88,10 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
       // data: newStaff,
     });
   } catch (err) {
+    // console.log('err response:', err.response.data)
     if (err.response.status === 401) {
-      return res.status(401).json({ success: false, msg: err.response.data });
+      // return res.status(401).json({ success: false, msg: err.response.data });
+      return res.status(401).json({ success: false, msg: "Invalid authentication details, try again later." });
     }
     return res.status(500).json({ success: false, msg: err.message });
   }
