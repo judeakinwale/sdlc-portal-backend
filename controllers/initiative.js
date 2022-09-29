@@ -8,7 +8,7 @@ const {createOrUpdateInitiative} = require("../utils/initiativeUtils")
 const {phaseQPS, conformanceStatus} = require("../utils/calculateScore")
 
 
-exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases reponses"}
+exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
 
 
 // @desc    Create Initiative
