@@ -1,0 +1,510 @@
+{
+  "success": true,
+  "count": 7,
+  "pagination": {},
+  "data": [
+      {
+          "_id": "62476993a167a2cb4b16ee2e",
+          "title": "Software Development",
+          "__v": 8,
+          "gates": [
+              {
+                  "_id": "62476c81a167a2cb4b16ee48",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 1,
+                  "title": "Planning",
+                  "__v": 2,
+                  "criteria": [
+                      {
+                          "_id": "624b0667956d651c1b69e026",
+                          "gate": "62476c81a167a2cb4b16ee48",
+                          "title": "Entrance criteria",
+                          "percentage": 5,
+                          "items": [
+                              {
+                                  "_id": "624f33646dcfed6a1972caa6",
+                                  "criterion": "624b0667956d651c1b69e026",
+                                  "title": "EC1",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f33f44e1ca5a338b62832",
+                                  "criterion": "624b0667956d651c1b69e026",
+                                  "title": "EC2",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f33fd4e1ca5a338b62836",
+                                  "criterion": "624b0667956d651c1b69e026",
+                                  "title": "EC3",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f340e4e1ca5a338b6283a",
+                                  "criterion": "624b0667956d651c1b69e026",
+                                  "title": "EC4",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f34184e1ca5a338b6283e",
+                                  "criterion": "624b0667956d651c1b69e026",
+                                  "title": "EC5",
+                                  "__v": 0
+                              }
+                          ],
+                          "__v": 1
+                      },
+                      {
+                          "_id": "624b068f956d651c1b69e02b",
+                          "gate": "62476c81a167a2cb4b16ee48",
+                          "title": "High level objecjectives",
+                          "percentage": 50,
+                          "items": [
+                              {
+                                  "_id": "624f344a4e1ca5a338b62844",
+                                  "criterion": "624b068f956d651c1b69e02b",
+                                  "title": "HL1",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f344e4e1ca5a338b62848",
+                                  "criterion": "624b068f956d651c1b69e02b",
+                                  "title": "HL2",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f34544e1ca5a338b6284c",
+                                  "criterion": "624b068f956d651c1b69e02b",
+                                  "title": "HL3",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f34584e1ca5a338b62850",
+                                  "criterion": "624b068f956d651c1b69e02b",
+                                  "title": "HL4",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f360f4e1ca5a338b6285f",
+                                  "criterion": "624b068f956d651c1b69e02b",
+                                  "title": "HL5",
+                                  "__v": 0
+                              }
+                          ],
+                          "__v": 1
+                      },
+                      {
+                          "_id": "624b07985aa4378221d34c17",
+                          "gate": "62476c81a167a2cb4b16ee48",
+                          "title": "Exit criteria",
+                          "percentage": 45,
+                          "items": [
+                              {
+                                  "_id": "624f364b4e1ca5a338b62865",
+                                  "criterion": "624b07985aa4378221d34c17",
+                                  "title": "XC1",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f36524e1ca5a338b62869",
+                                  "criterion": "624b07985aa4378221d34c17",
+                                  "title": "XC2",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f36584e1ca5a338b6286d",
+                                  "criterion": "624b07985aa4378221d34c17",
+                                  "title": "XC3",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f365d4e1ca5a338b62871",
+                                  "criterion": "624b07985aa4378221d34c17",
+                                  "title": "XC4",
+                                  "__v": 0
+                              },
+                              {
+                                  "_id": "624f36644e1ca5a338b62875",
+                                  "criterion": "624b07985aa4378221d34c17",
+                                  "title": "XC5",
+                                  "__v": 0
+                              }
+                          ],
+                          "__v": 1
+                      }
+                  ],
+                  "id": "62476c81a167a2cb4b16ee48"
+              },
+              {
+                  "_id": "62476db978f99df7188caabc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 2,
+                  "title": "Design & Prototyping",
+                  "__v": 0,
+                  "criteria": [],
+                  "id": "62476db978f99df7188caabc"
+              },
+              {
+                  "_id": "62476eaa78f99df7188caac6",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 3,
+                  "title": "Testing",
+                  "__v": 0,
+                  "criteria": [],
+                  "id": "62476eaa78f99df7188caac6"
+              },
+              {
+                  "_id": "62476ee578f99df7188caacc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 4,
+                  "title": "Deployment",
+                  "__v": 0,
+                  "criteria": [],
+                  "id": "62476ee578f99df7188caacc"
+              },
+              {
+                  "_id": "62476ef778f99df7188caad0",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 5,
+                  "title": "Define requirement",
+                  "__v": 0,
+                  "criteria": [],
+                  "id": "62476ef778f99df7188caad0"
+              },
+              {
+                  "_id": "6329cfb463d9be4bfaf14821",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "order": 11,
+                  "title": "Test",
+                  "__v": 0,
+                  "id": "6329cfb463d9be4bfaf14821"
+              }
+          ],
+          "phases": [
+              {
+                  "_id": "62575fa0b8882bb7a0eb318e",
+                  "initiative": "62575619b6ea64ac2ed71ad3",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476c81a167a2cb4b16ee48",
+                  "order": 1,
+                  "has_violation": false,
+                  "createdAt": "2022-04-13T23:41:17.472Z",
+                  "__v": 0,
+                  "score": 90,
+                  "id": "62575fa0b8882bb7a0eb318e"
+              },
+              {
+                  "_id": "62575fa1b8882bb7a0eb3190",
+                  "initiative": "62575619b6ea64ac2ed71ad3",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476db978f99df7188caabc",
+                  "order": 2,
+                  "has_violation": true,
+                  "createdAt": "2022-04-13T23:41:17.472Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "62575fa1b8882bb7a0eb3190"
+              },
+              {
+                  "_id": "62575fa1b8882bb7a0eb3192",
+                  "initiative": "62575619b6ea64ac2ed71ad3",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476eaa78f99df7188caac6",
+                  "order": 3,
+                  "has_violation": true,
+                  "createdAt": "2022-04-13T23:41:17.472Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "62575fa1b8882bb7a0eb3192"
+              },
+              {
+                  "_id": "62575fa1b8882bb7a0eb3194",
+                  "initiative": "62575619b6ea64ac2ed71ad3",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ee578f99df7188caacc",
+                  "order": 4,
+                  "has_violation": true,
+                  "createdAt": "2022-04-13T23:41:17.472Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "62575fa1b8882bb7a0eb3194"
+              },
+              {
+                  "_id": "62575fa1b8882bb7a0eb3196",
+                  "initiative": "62575619b6ea64ac2ed71ad3",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ef778f99df7188caad0",
+                  "order": 5,
+                  "has_violation": true,
+                  "createdAt": "2022-04-13T23:41:17.472Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "62575fa1b8882bb7a0eb3196"
+              },
+              {
+                  "_id": "625fe8fc485af4d75d2d00fc",
+                  "initiative": "625fdabcc84dc4b6f9bfaddc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476c81a167a2cb4b16ee48",
+                  "order": 1,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:05:09.438Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fe8fc485af4d75d2d00fc"
+              },
+              {
+                  "_id": "625fe950c6f28d0de3573d8b",
+                  "initiative": "625fdabcc84dc4b6f9bfaddc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476db978f99df7188caabc",
+                  "order": 2,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:05:57.528Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fe950c6f28d0de3573d8b"
+              },
+              {
+                  "_id": "625fe950c6f28d0de3573d8e",
+                  "initiative": "625fdabcc84dc4b6f9bfaddc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476eaa78f99df7188caac6",
+                  "order": 3,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:05:57.528Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fe950c6f28d0de3573d8e"
+              },
+              {
+                  "_id": "625fe950c6f28d0de3573d91",
+                  "initiative": "625fdabcc84dc4b6f9bfaddc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ee578f99df7188caacc",
+                  "order": 4,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:05:57.528Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fe950c6f28d0de3573d91"
+              },
+              {
+                  "_id": "625fe950c6f28d0de3573d94",
+                  "initiative": "625fdabcc84dc4b6f9bfaddc",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ef778f99df7188caad0",
+                  "order": 5,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:05:57.528Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fe950c6f28d0de3573d94"
+              },
+              {
+                  "_id": "625fea720977864f3f8a8cac",
+                  "initiative": "625fea720977864f3f8a8ca9",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476c81a167a2cb4b16ee48",
+                  "order": 1,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:08:14.077Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fea720977864f3f8a8cac"
+              },
+              {
+                  "_id": "625fea720977864f3f8a8caf",
+                  "initiative": "625fea720977864f3f8a8ca9",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476db978f99df7188caabc",
+                  "order": 2,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:08:14.077Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fea720977864f3f8a8caf"
+              },
+              {
+                  "_id": "625fea720977864f3f8a8cb2",
+                  "initiative": "625fea720977864f3f8a8ca9",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476eaa78f99df7188caac6",
+                  "order": 3,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:08:14.077Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fea720977864f3f8a8cb2"
+              },
+              {
+                  "_id": "625fea720977864f3f8a8cb5",
+                  "initiative": "625fea720977864f3f8a8ca9",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ee578f99df7188caacc",
+                  "order": 4,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:08:14.077Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fea720977864f3f8a8cb5"
+              },
+              {
+                  "_id": "625fea720977864f3f8a8cb8",
+                  "initiative": "625fea720977864f3f8a8ca9",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ef778f99df7188caad0",
+                  "order": 5,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T11:08:14.077Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625fea720977864f3f8a8cb8"
+              },
+              {
+                  "_id": "625ff61d7576c3329d9beaee",
+                  "initiative": "625ff61d7576c3329d9beaeb",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476c81a167a2cb4b16ee48",
+                  "order": 1,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T12:01:30.477Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625ff61d7576c3329d9beaee"
+              },
+              {
+                  "_id": "625ff61d7576c3329d9beaf1",
+                  "initiative": "625ff61d7576c3329d9beaeb",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476db978f99df7188caabc",
+                  "order": 2,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T12:01:30.477Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625ff61d7576c3329d9beaf1"
+              },
+              {
+                  "_id": "625ff61d7576c3329d9beaf4",
+                  "initiative": "625ff61d7576c3329d9beaeb",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476eaa78f99df7188caac6",
+                  "order": 3,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T12:01:30.477Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625ff61d7576c3329d9beaf4"
+              },
+              {
+                  "_id": "625ff61d7576c3329d9beaf7",
+                  "initiative": "625ff61d7576c3329d9beaeb",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ee578f99df7188caacc",
+                  "order": 4,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T12:01:30.477Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625ff61d7576c3329d9beaf7"
+              },
+              {
+                  "_id": "625ff61d7576c3329d9beafa",
+                  "initiative": "625ff61d7576c3329d9beaeb",
+                  "initiativeType": "62476993a167a2cb4b16ee2e",
+                  "gate": "62476ef778f99df7188caad0",
+                  "order": 5,
+                  "has_violation": false,
+                  "createdAt": "2022-04-20T12:01:30.477Z",
+                  "__v": 0,
+                  "score": 0,
+                  "id": "625ff61d7576c3329d9beafa"
+              }
+          ],
+          "id": "62476993a167a2cb4b16ee2e"
+      },
+      {
+          "_id": "62476aeda167a2cb4b16ee38",
+          "title": "Infrastructure",
+          "__v": 6,
+          "gates": [
+              {
+                  "_id": "6329cfbf63d9be4bfaf14829",
+                  "initiativeType": "62476aeda167a2cb4b16ee38",
+                  "order": 13,
+                  "title": "Testsdsd",
+                  "__v": 0,
+                  "id": "6329cfbf63d9be4bfaf14829"
+              },
+              {
+                  "_id": "632d6d746e229c14ed89a6ee",
+                  "initiativeType": "62476aeda167a2cb4b16ee38",
+                  "order": 4,
+                  "title": "kn",
+                  "__v": 0,
+                  "id": "632d6d746e229c14ed89a6ee"
+              },
+              {
+                  "_id": "63316edb18f57a5c5686ac94",
+                  "initiativeType": "62476aeda167a2cb4b16ee38",
+                  "order": 21,
+                  "title": "jude te",
+                  "__v": 0,
+                  "id": "63316edb18f57a5c5686ac94"
+              }
+          ],
+          "phases": [],
+          "id": "62476aeda167a2cb4b16ee38"
+      },
+      {
+          "_id": "62476b18a167a2cb4b16ee42",
+          "title": "Data, Cloud & AI",
+          "__v": 6,
+          "gates": [
+              {
+                  "_id": "6329cfc963d9be4bfaf14831",
+                  "initiativeType": "62476b18a167a2cb4b16ee42",
+                  "order": 132,
+                  "title": "Testsdsdsd",
+                  "__v": 0,
+                  "id": "6329cfc963d9be4bfaf14831"
+              }
+          ],
+          "phases": [],
+          "id": "62476b18a167a2cb4b16ee42"
+      },
+      {
+          "_id": "6329cfd763d9be4bfaf14845",
+          "title": "Test",
+          "__v": 0,
+          "gates": [],
+          "phases": [],
+          "id": "6329cfd763d9be4bfaf14845"
+      },
+      {
+          "_id": "632ce07f515c9108cb6a0492",
+          "title": "LumLum",
+          "__v": 0,
+          "gates": [],
+          "phases": [],
+          "id": "632ce07f515c9108cb6a0492"
+      },
+      {
+          "_id": "63316e9f18f57a5c5686ac81",
+          "title": "jude",
+          "__v": 0,
+          "gates": [],
+          "phases": [],
+          "id": "63316e9f18f57a5c5686ac81"
+      },
+      {
+          "_id": "6332c52ee7ec49ebb537c6a5",
+          "title": "why",
+          "__v": 0,
+          "gates": [],
+          "phases": [],
+          "id": "6332c52ee7ec49ebb537c6a5"
+      }
+  ]
+}
