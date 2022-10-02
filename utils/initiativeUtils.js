@@ -2,6 +2,7 @@ const asyncHandler = require("../middleware/async");
 const Gate = require("../models/Gate");
 const Initiative = require("../models/Initiative")
 const Phase = require("../models/Phase");
+const Status = require("../models/Status");
 const Type = require("../models/Type")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
@@ -9,7 +10,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   const {user, body} = req
 
   if (!req.body.serialNumber) {
-    req.body.serialNumber = this.generateQASerialNumber()
+    req.body.serialNumber = await this.generateQASerialNumber()
   }
 
   let existingInitiative
@@ -77,19 +78,35 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         order: gate.order
       })
       if (!foundPhase ) {
+        const getOrCreatePendingStatus = await Status.findOneAndUpdate({title: "Pending"}, {}, {upsert: true})
+        console.log(getOrCreatePendingStatus)
         const createdPhase = await Phase.create({
           initiative: initiative._id,
           initiativeType: initiativeType._id,
           gate: gate._id,
-          order: gate.order
+          order: gate.order,
+          status: getOrCreatePendingStatus._id,
         })
+        console.log(createdPhase)
       }
     } catch (err) {
       console.log("Phase not found")
+
+      const getOrCreatePendingStatus = await Status.findOneAndUpdate({title: "Pending"}, {}, {upsert: true})
+      console.log(getOrCreatePendingStatus)
+      const createdPhase = await Phase.create({
+        initiative: initiative._id,
+        initiativeType: initiativeType._id,
+        gate: gate._id,
+        order: gate.order,
+        status: getOrCreatePendingStatus._id,
+      })
+      console.log(createdPhase)
     }
   }
 
   const relatedPhases = await Phase.find({initiative: initiative._id}).sort("order").populate("gate status")
+  console.log(relatedPhases)
 
   // Get quality stage gate details (violations: true, status: "Undetermined")
   let qualityStageGateDetails

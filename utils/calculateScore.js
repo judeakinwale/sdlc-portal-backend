@@ -13,6 +13,7 @@ exports.conformanceStatus = async initiative => {
    */
   const phases = await Phase.find({initiative: initiative._id});
   initiative_score = 0
+  passScore = initiative.passScore || 70
   // count = 0
   for (const [key, phase] of Object.entries(phases)) {
     initiative_score += phase.score
