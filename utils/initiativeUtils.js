@@ -22,6 +22,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   } else {
     existingInitiative = await Initiative.findOne({title: body.title})
     initiativeType = await Type.findById(body.type)
+    console.log("resolved body.type", initiativeType, body.type)
     body.requesterName = req.user.fullname
     body.requesterEmail = req.user.email
   }
@@ -87,7 +88,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
           order: gate.order,
           status: getOrCreatePendingStatus._id,
         })
-        console.log(createdPhase)
+        console.log("in try catch block", createdPhase)
       }
     } catch (err) {
       console.log("Phase not found")
@@ -106,7 +107,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   }
 
   const relatedPhases = await Phase.find({initiative: initiative._id}).sort("order").populate("gate status")
-  console.log(relatedPhases)
+  console.log("related phases after try catch: block", relatedPhases)
 
   // Get quality stage gate details (violations: true, status: "Undetermined")
   let qualityStageGateDetails
