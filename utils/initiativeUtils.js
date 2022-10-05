@@ -72,6 +72,8 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   // create phases for all gates of the selected initiative type
   for (const [key, gate] of Object.entries(initiativeType.gates)) {
     try {
+
+      
       // const foundPhase = await Phase.findOne({
       //   initiative: initiative._id,
       //   initiativeType: initiativeType._id,
@@ -110,7 +112,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         {upsert: true, new: true, runValidators: true}
       )
       console.log('in try catch block', getOrCreatePhase)
-      
+
     } catch (err) {
       console.log('Phase not found: ', err)
 
