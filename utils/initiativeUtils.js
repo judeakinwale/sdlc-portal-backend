@@ -7,6 +7,9 @@ const Type = require('../models/Type')
 const {ErrorResponseJSON, SuccessResponseJSON} = require('../utils/errorResponse')
 
 
+exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
+
+
 exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   try {
     const authUser = req.user
@@ -14,11 +17,11 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   
     // update a copy of the request body
     // if (!body.serialNumber) body.serialNumber = await this.generateQASerialNumber()
-    body.serialNumber = body.serialNumber || await this.generateQASerialNumber()
+    // body.serialNumber = body.serialNumber || await this.generateQASerialNumber()
     body.requesterName = authUser.fullname
     body.requesterEmail = authUser.email
   
-    console.log("body (payload) : ", body)
+    console.log("body (payload) : ", body, "\n")
   
   
     // Create statuses
@@ -46,7 +49,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     })
-    console.log("statuses : ", pendingStatus, undeterminedStatus, startedStatus, completedStatus)
+    console.log("statuses : ", pendingStatus, undeterminedStatus, startedStatus, completedStatus, "\n")
   
   
     // try getting or creating an initiative type
@@ -56,18 +59,18 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         initiative = await Initiative.findByIdAndUpdate(req.params.id, body, {
           new: true,
           runValidators: true,
-        })
+        }).populate(this.populateInitiative)
       } else {
         initiative = await Initiative.findOneAndUpdate({title: body.title}, body, {
           upsert: true,
           new: true,
           runValidators: true,
-        })
+        }).populate(this.populateInitiative)
       }
     } catch(err) {
-      console.log("Error getting or creating Initiatives: ", err.message)
+      console.log("Error getting or creating Initiatives: ", err.message, "\n")
     }
-    console.log("initiative (initial) : ", initiative)
+    console.log("initiative (initial) : ", initiative, "\n")
   
   
     // get or create phases for the gates of the initiative type
@@ -84,14 +87,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         new: true,
         runValidators: true,
       })
-      console.log('in try catch block', getOrCreatePhase)
+      console.log('initiative phases (gates) being created', getOrCreatePhase, "\n")
     })
-    console.log("initiativeType, gates : ", initiativeType, gates)
+    console.log("initiativeType, gates : ", initiativeType, gates, "\n")
   
   
     // get related phases (gate details) for getting phase, quality stage gate and delivery phase
     const relatedPhases = await Phase.find({initiative: initiative._id}).sort('order').populate('gate status')
-    console.log("relatedPhases : ", relatedPhases)
+    console.log("relatedPhases : ", relatedPhases, "\n")
   
   
     // set quality stage gate and quality stage gate details
@@ -105,14 +108,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       }).sort('order').populate('gate status')
       qualityStageGate = await Gate.findById(qualityStageGate.gate)
     } catch(err) {
-      console.log("Quality Stage Gate details and Quality Stage Gate not found: ", err.message, ". Using default values")
+      console.log("Quality Stage Gate details and Quality Stage Gate not found: ", err.message, ". Using default values", "\n")
       qualityStageGateDetails = await Phase.findOne({
         initiative: initiative._id,
         order: 1, 
       }).sort('order').populate('gate status')
       qualityStageGate = await Gate.findById(qualityStageGateDetails.gate)
     }
-    console.log("qualityStageGateDetails, qualityStageGate : ", qualityStageGateDetails, qualityStageGate)
+    console.log("qualityStageGateDetails, qualityStageGate : ", qualityStageGateDetails, qualityStageGate, "\n")
   
   
     // set delivery phase and delivery phase details
@@ -126,14 +129,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       }).sort('order').populate('gate status')
       deliveryPhase = await Gate.findById(deliveryPhase.gate)
     } catch(err) {
-      console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values")
+      console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values", "\n")
       deliveryPhaseDetails = await Phase.findOne({
         initiative: initiative._id,
         order: 1, 
       }).sort('order').populate('gate status')
       deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
     }
-    console.log("deliveryPhaseDetails, deliveryPhase : ", deliveryPhaseDetails, deliveryPhase)
+    console.log("deliveryPhaseDetails, deliveryPhase : ", deliveryPhaseDetails, deliveryPhase, "\n")
   
   
     // set phase and phase details
@@ -148,17 +151,18 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         // has_violation: true
       }).sort('order').populate('gate status')
     } catch(err) {
-      console.log("Phase details and Phase not found: ", err.message, ". Using default values")
+      console.log("Phase details and Phase not found: ", err.message, ". Using default values", "\n")
       phaseDetails = await Phase.findOne({
         initiative: initiative._id,
         order: 1, 
       }).sort('order').populate('gate status')
       phase = await Gate.findById(phaseDetails.gate)
     }
-    console.log("phaseDetails, phase : ", phaseDetails, phase)
+    console.log("phaseDetails, phase : ", phaseDetails, phase, "\n")
   
   
     // update the initiative
+    initiative.serialNumber = initiative.serialNumber || await this.generateQASerialNumber()
     initiative.qualityStageGate = qualityStageGate
     initiative.qualityStageGateDetails = qualityStageGateDetails
     initiative.deliveryPhase = deliveryPhase
@@ -166,7 +170,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     initiative.phaseDetails = phaseDetails
   
     await initiative.save()
-    console.log("initiative (final) : ", initiative)
+    console.log("initiative (final) : ", initiative, "\n")
   
     return initiative
   } catch(err) {
