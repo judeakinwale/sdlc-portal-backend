@@ -167,6 +167,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     initiative.qualityStageGateDetails = qualityStageGateDetails
     initiative.deliveryPhase = deliveryPhase
     initiative.deliveryPhaseDetails = deliveryPhaseDetails
+    initiative.phase = phase
     initiative.phaseDetails = phaseDetails
   
     await initiative.save()
