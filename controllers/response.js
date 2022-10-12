@@ -1,9 +1,12 @@
 const asyncHandler = require("../middleware/async")
 const Initiative = require("../models/Initiative")
+const Item = require("../models/Item")
+const Criterion = require("../models/Criterion")
 const Phase = require("../models/Phase")
 const Response = require("../models/Response")
 const { phaseQPS } = require("../utils/calculateScore")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+const Gate = require("../models/Gate")
 
 
 exports.populateResponse = {path: "staff initiative phase gate criterion item prefix"}
@@ -13,13 +16,24 @@ exports.populateResponse = {path: "staff initiative phase gate criterion item pr
 // @route  POST /api/v1/response
 // @access   Private
 exports.createResponse = asyncHandler(async (req, res, next) => {
-  const {user, body} = req
+  // const {user, body} = req
   req.body.staff = req.user._id
 
-  if (!("phase" in body) && "gate" in body) {
-    const getPhase  = await Phase.findOne(initiative=req.body.initiative, gate=req.body.gate)
-    req.body.phase = getPhase.id
-  }
+  // get the criterion, gate and phase from the criteria item
+  const item = await Item.findById(req.body.item)
+
+  const criterion = req.body.criterion ? await  Criterion.findById(req.body.criterion) : await  Criterion.findById(item.criterion)
+  req.body.criterion = criterion._id
+  const gate = req.body.gate ? req.body.gate : await Gate.findById(criterion.gate)._id
+  req.body.gate = gate
+  const phase = req.body.phase ? req.body.phase : await Phase.findOne({initiative: req.body.initiative, gate: req.body.gate})._id
+  req.body.phase = phase
+
+  // if (!("phase" in body) && "gate" in body) {
+  //   const getPhase  = await Phase.findOne(initiative=req.body.initiative, gate=req.body.gate)
+  //   req.body.phase = getPhase._id
+  // }
+
 
   const existingResponse = await Response.find({
     staff: req.body.staff,
