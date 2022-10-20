@@ -13,12 +13,12 @@ const Response = new mongoose.Schema({
   phase: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Phase",
-    required: true,
+    // required: true,
   },
   gate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Gate",
-    required: true,
+    // required: true,
   },
   criterion: {
     type: mongoose.Schema.Types.ObjectId,
