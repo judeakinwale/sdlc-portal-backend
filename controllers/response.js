@@ -49,10 +49,10 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   // Update related phase's status
   const related_phase = await Phase.findById(req.body.phase)
 
-  if (related_phase.status != "Completed" && related_phase.status != "Started") {
-    related_phase.status = "Started"
-    await related_phase.save()
-  }
+  // if (related_phase.status != "Completed" && related_phase.status != "Started") {
+  //   related_phase.status = "Started"
+  //   await related_phase.save()
+  // }
 
   const response = await Response.create(req.body)
   if (!response) {
