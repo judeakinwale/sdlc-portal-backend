@@ -35,16 +35,16 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   // }
 
 
-  const existingResponse = await Response.find({
-    staff: req.body.staff,
-    initiative: req.body.initiative,
-    phase: req.body.phase,
-    criterion: req.body.criterion,
-    item: req.body.item,
-  })
-  if (existingResponse.length > 0) {
-    return new ErrorResponseJSON(res, "This response already exists, update it instead!", 400)
-  }
+  // const existingResponse = await Response.find({
+  //   staff: req.body.staff,
+  //   initiative: req.body.initiative,
+  //   phase: req.body.phase,
+  //   criterion: req.body.criterion,
+  //   item: req.body.item,
+  // })
+  // if (existingResponse.length > 0) {
+  //   return new ErrorResponseJSON(res, "This response already exists, update it instead!", 400)
+  // }
 
   // // Update related phase's status
   // const related_phase = await Phase.findById(req.body.phase)
@@ -54,10 +54,23 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   //   await related_phase.save()
   // }
 
-  const response = await Response.create(req.body)
-  if (!response) {
-    return new ErrorResponseJSON(res, "Response not created!", 404)
-  }
+
+  const response = await Response.findOneAndUpdate({
+    initiative: req.body.initiative,
+    phase: req.body.phase,
+    criterion: req.body.criterion,
+    item: req.body.item,
+  }, req.body, {
+    new: true,
+    runValidators: true,
+    upsert: true
+  })
+
+
+  // const response = await Response.create(req.body)
+  // if (!response) {
+  //   return new ErrorResponseJSON(res, "Response not created!", 404)
+  // }
 
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)
@@ -113,5 +126,18 @@ exports.deleteResponse = asyncHandler(async (req, res, next) => {
   if (!response) {
     return new ErrorResponseJSON(res, "Response not found!", 404)
   }
+  return new SuccessResponseJSON(res, response)
+})
+
+
+// @desc    Delete All Response
+// @route  DELETE /api/v1/response/:id
+// @access   Private
+exports.deleteAllResponses = asyncHandler(async (req, res, next) => {
+  const response = await Response.deleteMany()
+  // if (!response) {
+  //   return new ErrorResponseJSON(res, "Response not found!", 404)
+  // }
+  console.log("All responses deleted".bgRed)
   return new SuccessResponseJSON(res, response)
 })
