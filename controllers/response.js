@@ -133,7 +133,7 @@ exports.deleteResponse = asyncHandler(async (req, res, next) => {
 // @desc    Delete All Response
 // @route  DELETE /api/v1/response/:id
 // @access   Private
-exports.deleteAllResponses = asyncHandler(async (req, res, next) => {
+exports.  deleteAllResponses = asyncHandler(async (req, res, next) => {
   const response = await Response.deleteMany()
   // if (!response) {
   //   return new ErrorResponseJSON(res, "Response not found!", 404)

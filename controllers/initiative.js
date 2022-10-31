@@ -8,14 +8,39 @@ const {createOrUpdateInitiative} = require("../utils/initiativeUtils")
 const {phaseQPS, conformanceStatus} = require("../utils/calculateScore")
 
 
-exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
-
+exports.populateInitiative = [
+  {
+  path: "qualityAssuranceEngineer",
+  },
+  {
+  path :"type",
+  },
+  {
+  path :"qualityStageGate",
+  },
+  {
+  path :"deliveryPhase",
+  },
+  {
+  path :"phase",
+  },
+  {
+  path :"status",
+  },
+  {
+  path :"phases",
+  },
+  {
+  path :"responses",
+  populate: [{path: "item prefix"}]
+  },
+],
 
 // @desc    Create Initiative
 // @route  POST /api/v1/initiative
 // @access   Private
 exports.createInitiative = asyncHandler(async (req, res, next) => {
-  // Create or update initiative
+  // Create or update initiativeitem prefix
   const initiative = await createOrUpdateInitiative(req, res)
 
   // Test calculating the QPS score
