@@ -12,8 +12,8 @@ exports.conformanceStatus = async initiative => {
    * RAG : "Red", "Amber", "Green"
    */
   const phases = await Phase.find({initiative: initiative._id});
-  initiative_score = 0
-  passScore = initiative.passScore || 70
+  let initiative_score = 0
+  let passScore = initiative.passScore || 70
   // count = 0
   for (const [key, phase] of Object.entries(phases)) {
     initiative_score += phase.score
@@ -52,10 +52,11 @@ exports.phaseQPS = async initiative => {
       phase_result[index].gate = phase.gate
       phase_result[index].order = phase.order
 
-      phase_gate = await Gate.findById(phase.gate)
+      let phase_gate = await Gate.findById(phase.gate)
       const phase_criteria = phase_gate.criteria
 
       let phase_score = 0
+      let phase_criteria_score = []
 
       for (const [key, criterion] of Object.entries(phase_criteria)) {
 
@@ -75,7 +76,7 @@ exports.phaseQPS = async initiative => {
 
         let criterion_score = 0
         // max_score = phase_responses.length * max_prefix_score
-        max_score = criterion_item.length * max_prefix_score
+        let max_score = criterion_item.length * max_prefix_score
 
         for (const[key, response] of Object.entries(phase_responses)) {
           criterion_score  += response.prefix.score
@@ -84,12 +85,22 @@ exports.phaseQPS = async initiative => {
         if (max_score == 0) {
           phase_score += 0
         } else {
+
+          let criterion_id = criterion._id
+          let weighted_criterion_score = (criterion_score / max_score) * criterion.percentage
+          phase_criteria_score.push({
+            criterion: criterion_id, 
+            unweightedScore: (criterion_score / max_score), 
+            score: weighted_criterion_score,
+          })
+
           phase_score += (criterion_score / max_score) * criterion.percentage
         }
       }
 
       phase_result[index].score = phase_score
       phase.score = phase_score
+      phase.criteria_scores = phase_criteria_score
       
       // console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
 

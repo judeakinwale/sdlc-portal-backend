@@ -25,6 +25,25 @@ const Phase = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // // criteria_scores: {
+  // //   type: [mongoose.Schema.Types.ObjectId]: {
+  // //     criterion: mongoose.Schema.Types.ObjectId,
+  // //     unweightedScore: Number,
+  // //     score: Number,
+  // //   },
+  // // },
+  // criteria_scores: {
+  //   type: Map<mongoose.Schema.Types.ObjectId, {
+  //     criterion: mongoose.Schema.Types.ObjectId,
+  //     unweightedScore: Number,
+  //     score: Number,
+  //   }>
+  // },
+  criteria_scores: [{
+      criterion: mongoose.Schema.Types.ObjectId,
+      unweightedScore: Number,
+      score: Number,
+    }],
   score: {
     type: Number,
   },
