@@ -100,7 +100,7 @@ exports.phaseQPS = async initiative => {
 
       phase_result[index].score = phase_score
       phase.score = phase_score
-      phase.criteria_scores = phase_criteria_score
+      phase.criteriaScores = phase_criteria_score
       
       // console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
 

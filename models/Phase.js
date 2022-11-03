@@ -39,7 +39,7 @@ const Phase = new mongoose.Schema({
   //     score: Number,
   //   }>
   // },
-  criteria_scores: [{
+  criteriaScores: [{
       criterion: mongoose.Schema.Types.ObjectId,
       unweightedScore: Number,
       score: Number,
