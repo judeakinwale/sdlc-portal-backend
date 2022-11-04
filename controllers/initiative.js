@@ -19,10 +19,19 @@ exports.populateInitiative = [
   path :"qualityStageGate",
   },
   {
+  path :"qualityStageGateDetails",
+  },
+  {
   path :"deliveryPhase",
   },
   {
+  path :"deliveryPhaseDetails",
+  },
+  {
   path :"phase",
+  },
+  {
+  path :"phaseDetails",
   },
   {
   path :"status",
