@@ -40,9 +40,18 @@ const Phase = new mongoose.Schema({
   //   }>
   // },
   criteriaScores: [{
-      criterion: mongoose.Schema.Types.ObjectId,
-      unweightedScore: Number,
-      score: Number,
+      criterion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Criterion",
+      },
+      unweightedScore: {
+        type: Number,
+        default: 0,
+      },
+      score: {
+        type: Number,
+        default: 0,
+      },
     }],
   score: {
     type: Number,

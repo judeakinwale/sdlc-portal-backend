@@ -32,6 +32,12 @@ exports.populateInitiative = [
   },
   {
   path :"phaseDetails",
+  populate: {
+    path: "criteriaScores",
+    populate: [{
+      path: "criterion"
+    }]
+  }
   },
   {
   path :"status",
