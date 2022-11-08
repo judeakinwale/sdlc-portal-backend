@@ -70,6 +70,7 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
       return res.status(201).cookie("token", token).json({
         success: true,
         token,
+        role: checkStaff.role
       });
     }
 
@@ -85,6 +86,7 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
       success: true,
       msg: "Staff successfuly added",
       token,
+      role: newStaff.role
       // data: newStaff,
     });
   } catch (err) {
