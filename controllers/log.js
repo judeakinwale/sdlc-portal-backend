@@ -10,7 +10,7 @@ const {filterQuerysetByQuerysetInstances} = require("../utils/updateDetails")
 // @route  GET /api/v1/log/initiative/status/me
 // @access   Private
 exports.getInitiativesByStatus = asyncHandler(async (req, res, next) => {
-  query = {
+  const query = {
     qualityAssuranceEngineer: req.user,
   }
   const logs = await filterQuerysetByQuerysetInstances(req, Initiative, Status, query, "status")

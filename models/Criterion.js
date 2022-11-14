@@ -9,7 +9,7 @@ const Criterion = new mongoose.Schema({
   initiativeType: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Type",
-    required: [true, "Please select an Initiative Type"],
+    // required: [true, "Please select an Initiative Type"],
   },
   gate: {
     type: mongoose.Schema.Types.ObjectId,

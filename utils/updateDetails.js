@@ -3,9 +3,9 @@ const asyncHandler = require("../middleware/async")
 // const Type = require("../models/Type")
 // const Criterion = require("../models/Criterion")
 const {populateInitiative} = require("../controllers/initiative")
-const Criterion = require("../models/Criterion")
-const Item = require("../models/Item")
-const Gate = require("../models/Gate")
+// const Criterion = require("../models/Criterion")
+// const Item = require("../models/Item")
+// const Gate = require("../models/Gate")
 
 
 /**
@@ -34,20 +34,37 @@ const Gate = require("../models/Gate")
 //   return true
 // }
 
-exports.updateModelSchema = async (type = 'criterion') => {
-  let items
-  if (type == "criterion") {
-    const criteria = await Criterion.find()
-    for (const [key, criterion] of Object.entries(criteria)) {
-      let instance = await Criterion.findById(criterion.id)
-      let gate = await Gate.findById(instance)
-      instance.initiativeType = 
-      instance.save()
-    }
-  } else if (type == "item") {
-    items = await Item.find()
-  }
-}
+
+// // update criteria and criteria items with initiative type and gate
+// exports.updateModelSchema = async (type = 'criterion') => {
+//   // if (type == "criterion") {
+//     const criteria = await Criterion.find()
+//     console.log(`criteria length ${criteria.length}`)
+//     for (const [key, criterion] of Object.entries(criteria)) {
+//       let instance = await Criterion.findById(criterion.id)
+//       let gate = await Gate.findById(instance.gate)
+//       instance.initiativeType = gate.initiativeType
+//       await instance.save()
+//       console.log(`criterion instance with id ${instance._id} updated, key ${key}`)
+//     }
+//   // } else if (type == "item") {
+//     const items = await Item.find()
+//     console.log(`criteria items length ${items.length}`)
+//     items.forEach(async (item, index) => {
+//       let criterion  = await Criterion.findById(item.criterion)
+//       if (!criterion) criterion = await Criterion.findOne().sort("-_id")
+//       item.initiativeType = criterion.initiativeType
+//       item.gate = criterion.gate
+//       await item.save()
+//       console.log(`criteria item instance with id ${item._id} updated, key ${index}`)
+//     });
+//   // } else (
+//   //   console.log(`invalid model type: ${type}`)
+//   // )
+//  console.log(`criteria and criteria items: ${type}`)
+// }
+
+
 // Convert strings to title case
 exports.titleCase = str => {
   return str.toLowerCase().split(' ').map(function(word) {
