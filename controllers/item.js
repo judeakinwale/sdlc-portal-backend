@@ -1,4 +1,6 @@
 const asyncHandler = require("../middleware/async")
+const Criterion = require("../models/Criterion")
+const Gate = require("../models/Gate")
 const Item = require("../models/Item")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
@@ -15,6 +17,13 @@ exports.createItem = asyncHandler(async (req, res, next) => {
   if (existingItem.length > 0) {
     return new ErrorResponseJSON(res, "This item already exists, update it instead!", 400)
   }
+
+  const criterion = await Criterion.findById(req.body.criterion)
+  req.body.gate = criterion.gate
+  req.body.initiativeType = criterion.initiativeType
+  
+  // const gate = await Gate.findById(req.body.gate)
+  // req.body.initiativeType = gate.initiativeType
 
   const item = await Item.create(req.body)
   if (!item) {

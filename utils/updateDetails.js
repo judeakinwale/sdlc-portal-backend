@@ -3,6 +3,9 @@ const asyncHandler = require("../middleware/async")
 // const Type = require("../models/Type")
 // const Criterion = require("../models/Criterion")
 const {populateInitiative} = require("../controllers/initiative")
+const Criterion = require("../models/Criterion")
+const Item = require("../models/Item")
+const Gate = require("../models/Gate")
 
 
 /**
@@ -31,6 +34,20 @@ const {populateInitiative} = require("../controllers/initiative")
 //   return true
 // }
 
+exports.updateModelSchema = async (type = 'criterion') => {
+  let items
+  if (type == "criterion") {
+    const criteria = await Criterion.find()
+    for (const [key, criterion] of Object.entries(criteria)) {
+      let instance = await Criterion.findById(criterion.id)
+      let gate = await Gate.findById(instance)
+      instance.initiativeType = 
+      instance.save()
+    }
+  } else if (type == "item") {
+    items = await Item.find()
+  }
+}
 // Convert strings to title case
 exports.titleCase = str => {
   return str.toLowerCase().split(' ').map(function(word) {

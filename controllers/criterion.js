@@ -1,5 +1,6 @@
 const asyncHandler = require("../middleware/async")
 const Criterion = require("../models/Criterion")
+const Gate = require("../models/Gate")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
@@ -15,6 +16,9 @@ exports.createCriterion = asyncHandler(async (req, res, next) => {
   if (existingCriterion.length > 0) {
     return new ErrorResponseJSON(res, "This criterion already exists, update it instead!", 400)
   }
+
+  const gate = await Gate.findById(req.body.gate)
+  req.body.initiativeType = gate.initiativeType
 
   const gateCriteria = await Criterion.find({gate: req.body.gate})
   let totalPercentage = 0
