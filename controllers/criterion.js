@@ -4,7 +4,7 @@ const Gate = require("../models/Gate")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
-exports.populateCriterion = {path: "gate items"}
+exports.populateCriterion = {path: "gate items initiativeType"}
 
 
 // @desc    Create Criterion
