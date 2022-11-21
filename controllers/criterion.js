@@ -76,7 +76,7 @@ exports.updateCriterion = asyncHandler(async (req, res, next) => {
       totalPercentage += criterion.percentage
     }
     totalPercentage -= existingCriterion.percentage
-    totalPercentage += req.body.percentage
+    totalPercentage += Number(req.body.percentage)
     console.log(totalPercentage)
 
     if (totalPercentage > 100) {
