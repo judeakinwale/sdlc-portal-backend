@@ -27,9 +27,10 @@ exports.createCriterion = asyncHandler(async (req, res, next) => {
   for (const [key, criterion] of Object.entries(gateCriteria)) {
     totalPercentage += criterion.percentage
   }
-  totalPercentage += req.body.percentage
+  totalPercentage += Number(req.body.percentage)
 
   if (totalPercentage > 100) {
+    console.log("total percentage, gate criteria length: ", totalPercentage, gateCriteria.length)
     return new ErrorResponseJSON(res, "Total percentage for the criteria in the gate exceeeds 100!", 400)
   }
 
