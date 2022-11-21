@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Phase = require("../models/Phase")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
@@ -58,6 +59,7 @@ exports.updatePhase = asyncHandler(async (req, res, next) => {
   if (!phase) {
     return new ErrorResponseJSON(res, "Phase not updated!", 404)
   }
+  await phase.save()
   return new SuccessResponseJSON(res, phase)
 })
 
@@ -70,5 +72,6 @@ exports.deletePhase = asyncHandler(async (req, res, next) => {
   if (!phase) {
     return new ErrorResponseJSON(res, "Phase not found!", 404)
   }
+  await phase.save()
   return new SuccessResponseJSON(res, phase)
 })

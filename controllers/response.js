@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Initiative = require("../models/Initiative")
 const Item = require("../models/Item")
@@ -72,6 +73,8 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   //   return new ErrorResponseJSON(res, "Response not created!", 404)
   // }
 
+  await response.save()
+
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)
 
@@ -114,6 +117,7 @@ exports.updateResponse = asyncHandler(async (req, res, next) => {
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)
 
+  await response.save()
   return new SuccessResponseJSON(res, response)
 })
 
@@ -126,6 +130,7 @@ exports.deleteResponse = asyncHandler(async (req, res, next) => {
   if (!response) {
     return new ErrorResponseJSON(res, "Response not found!", 404)
   }
+  await response.save()
   return new SuccessResponseJSON(res, response)
 })
 
@@ -139,5 +144,6 @@ exports.  deleteAllResponses = asyncHandler(async (req, res, next) => {
   //   return new ErrorResponseJSON(res, "Response not found!", 404)
   // }
   console.log("All responses deleted".bgRed)
+  await response.save()
   return new SuccessResponseJSON(res, response)
 })

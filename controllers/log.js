@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Initiative = require("../models/Initiative")
 const Status = require("../models/Status")

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Staff = require("../models/Staff");
 const Photo = require("../models/Photo")
@@ -120,7 +121,8 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     if (!staff) {
       return new ErrorResponseJSON(res, "Staff not found", 400)
     }
-    return new SuccessResponseJSON(res, staff)
+  await staff.save()
+  return new SuccessResponseJSON(res, staff)
 });
 
 

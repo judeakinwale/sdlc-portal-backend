@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Staff = require("../models/Staff")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
@@ -37,6 +38,7 @@ exports.updateStaff = asyncHandler(async (req, res, next) => {
   if (!staff) {
     return new ErrorResponseJSON(res, "Staff not updated!", 404)
   }
+  await staff.save()
   return new SuccessResponseJSON(res, staff)
 })
 
@@ -49,5 +51,6 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
   if (!staff) {
     return new ErrorResponseJSON(res, "Staff not found!", 404)
   }
+  await staff.save()
   return new SuccessResponseJSON(res, staff)
 })

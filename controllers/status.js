@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Status = require("../models/Status")
 const {titleCase} = require("../utils/updateDetails")
@@ -57,6 +58,7 @@ exports.updateStatus = asyncHandler(async (req, res, next) => {
   if (!status) {
     return new ErrorResponseJSON(res, "Status not updated!", 404)
   }
+  await status.save()
   return new SuccessResponseJSON(res, status)
 })
 
@@ -69,5 +71,6 @@ exports.deleteStatus = asyncHandler(async (req, res, next) => {
   if (!status) {
     return new ErrorResponseJSON(res, "Status not found!", 404)
   }
+  await status.save()
   return new SuccessResponseJSON(res, status)
 })

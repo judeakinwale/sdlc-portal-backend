@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Prefix = require("../models/Prefix")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
@@ -51,6 +52,7 @@ exports.updatePrefix = asyncHandler(async (req, res, next) => {
   if (!prefix) {
     return new ErrorResponseJSON(res, "Prefix not updated!", 404)
   }
+  await prefix.save()
   return new SuccessResponseJSON(res, prefix)
 })
 
@@ -63,5 +65,6 @@ exports.deletePrefix = asyncHandler(async (req, res, next) => {
   if (!prefix) {
     return new ErrorResponseJSON(res, "Prefix not found!", 404)
   }
+  await prefix.save()
   return new SuccessResponseJSON(res, prefix)
 })

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Type = require("../models/Type")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
@@ -54,6 +55,7 @@ exports.updateType = asyncHandler(async (req, res, next) => {
     if (!type) {
       return new ErrorResponseJSON(res, "Type not updated!", 404)
     }
+  await type.save()
     return new SuccessResponseJSON(res, type)
 })
 
@@ -66,5 +68,6 @@ exports.deleteType = asyncHandler(async (req, res, next) => {
     if (!type) {
       return new ErrorResponseJSON(res, "Type not found!", 404)
     }
+  await type.save()
     return new SuccessResponseJSON(res, type)
 })

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Gate = require("../models/Gate")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
@@ -55,6 +56,7 @@ exports.updateGate = asyncHandler(async (req, res, next) => {
   if (!gate) {
     return new ErrorResponseJSON(res, "Gate not updated!", 404)
   }
+  await gate.save()
   return new SuccessResponseJSON(res, gate)
 })
 
@@ -67,5 +69,6 @@ exports.deleteGate = asyncHandler(async (req, res, next) => {
   if (!gate) {
     return new ErrorResponseJSON(res, "Gate not found!", 404)
   }
+  await gate.save()
   return new SuccessResponseJSON(res, gate)
 })

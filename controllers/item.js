@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Criterion = require("../models/Criterion")
 const Gate = require("../models/Gate")
@@ -64,6 +65,7 @@ exports.updateItem = asyncHandler(async (req, res, next) => {
   if (!item) {
     return new ErrorResponseJSON(res, "Item not updated!", 404)
   }
+  await item.save()
   return new SuccessResponseJSON(res, item)
 })
 
@@ -76,5 +78,6 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
   if (!item) {
     return new ErrorResponseJSON(res, "Item not found!", 404)
   }
+  await item.save()
   return new SuccessResponseJSON(res, item)
 })

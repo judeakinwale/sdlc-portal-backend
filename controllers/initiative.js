@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const asyncHandler = require("../middleware/async")
 const Initiative = require("../models/Initiative")
 const Gate = require("../models/Gate")
@@ -114,6 +115,7 @@ exports.updateInitiative = asyncHandler(async (req, res, next) => {
   if (!initiative) {
     return new ErrorResponseJSON(res, "Initiative not updated!", 404)
   }
+  await initiative.save()
   res.status(200).json({
     success: true,
     data: initiative,
@@ -130,6 +132,7 @@ exports.deleteInitiative = asyncHandler(async (req, res, next) => {
   if (!initiative) {
     return new ErrorResponseJSON(res, "Initiative not found!", 404)
   }
+  await initiative.save()
   return new SuccessResponseJSON(res, initiative)
 })
 
