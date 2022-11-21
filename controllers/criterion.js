@@ -105,6 +105,6 @@ exports.deleteCriterion = asyncHandler(async (req, res, next) => {
   if (!criterion) {
     return new ErrorResponseJSON(res, "Criterion not found!", 404)
   }
-  await criterion.save()
+  // await criterion.save()
   return new SuccessResponseJSON(res, criterion)
 })

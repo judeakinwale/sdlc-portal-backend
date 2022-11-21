@@ -51,6 +51,6 @@ exports.deleteStaff = asyncHandler(async (req, res, next) => {
   if (!staff) {
     return new ErrorResponseJSON(res, "Staff not found!", 404)
   }
-  await staff.save()
+  // await staff.save()
   return new SuccessResponseJSON(res, staff)
 })

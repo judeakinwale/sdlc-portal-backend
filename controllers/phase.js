@@ -72,6 +72,17 @@ exports.deletePhase = asyncHandler(async (req, res, next) => {
   if (!phase) {
     return new ErrorResponseJSON(res, "Phase not found!", 404)
   }
-  await phase.save()
+  // await phase.save()
+  return new SuccessResponseJSON(res, phase)
+})
+
+
+// @desc    Delete All Phases
+// @route  DELETE /api/v1/phase/:id
+// @access   Private
+exports.  deleteAllPhases = asyncHandler(async (req, res, next) => {
+  const phase = await Phase.deleteMany()
+  console.log("All phases deleted".bgRed)
+  // await phase.save()
   return new SuccessResponseJSON(res, phase)
 })

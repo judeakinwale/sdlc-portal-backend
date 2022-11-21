@@ -132,7 +132,7 @@ exports.deleteInitiative = asyncHandler(async (req, res, next) => {
   if (!initiative) {
     return new ErrorResponseJSON(res, "Initiative not found!", 404)
   }
-  await initiative.save()
+  // await initiative.save()
   return new SuccessResponseJSON(res, initiative)
 })
 

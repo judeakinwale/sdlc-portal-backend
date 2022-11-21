@@ -65,6 +65,6 @@ exports.deletePrefix = asyncHandler(async (req, res, next) => {
   if (!prefix) {
     return new ErrorResponseJSON(res, "Prefix not found!", 404)
   }
-  await prefix.save()
+  // await prefix.save()
   return new SuccessResponseJSON(res, prefix)
 })

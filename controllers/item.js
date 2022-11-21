@@ -78,6 +78,17 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
   if (!item) {
     return new ErrorResponseJSON(res, "Item not found!", 404)
   }
-  await item.save()
+  // await item.save()
+  return new SuccessResponseJSON(res, item)
+})
+
+
+// @desc    Delete All Items
+// @route  DELETE /api/v1/item/:id
+// @access   Private
+exports.  deleteAllItems = asyncHandler(async (req, res, next) => {
+  const item = await Item.deleteMany()
+  console.log("All items deleted".bgRed)
+  // await item.save()
   return new SuccessResponseJSON(res, item)
 })

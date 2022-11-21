@@ -69,6 +69,6 @@ exports.deleteGate = asyncHandler(async (req, res, next) => {
   if (!gate) {
     return new ErrorResponseJSON(res, "Gate not found!", 404)
   }
-  await gate.save()
+  // await gate.save()
   return new SuccessResponseJSON(res, gate)
 })

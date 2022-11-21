@@ -48,15 +48,15 @@ exports.getType = asyncHandler(async (req, res, next) => {
 // @route  UPDATE /api/v1/type/:id
 // @access   Private
 exports.updateType = asyncHandler(async (req, res, next) => {
-    const type = await Type.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-    if (!type) {
-      return new ErrorResponseJSON(res, "Type not updated!", 404)
-    }
+  const type = await Type.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
+  if (!type) {
+    return new ErrorResponseJSON(res, "Type not updated!", 404)
+  }
   await type.save()
-    return new SuccessResponseJSON(res, type)
+  return new SuccessResponseJSON(res, type)
 })
 
 
@@ -64,10 +64,10 @@ exports.updateType = asyncHandler(async (req, res, next) => {
 // @route  DELETE /api/v1/type
 // @access   Private
 exports.deleteType = asyncHandler(async (req, res, next) => {
-    const type = await Type.findByIdAndDelete(req.params.id)
-    if (!type) {
-      return new ErrorResponseJSON(res, "Type not found!", 404)
-    }
-  await type.save()
-    return new SuccessResponseJSON(res, type)
+  const type = await Type.findByIdAndDelete(req.params.id)
+  if (!type) {
+    return new ErrorResponseJSON(res, "Type not found!", 404)
+  }
+  // await type.save()
+  return new SuccessResponseJSON(res, type)
 })

@@ -71,6 +71,6 @@ exports.deleteStatus = asyncHandler(async (req, res, next) => {
   if (!status) {
     return new ErrorResponseJSON(res, "Status not found!", 404)
   }
-  await status.save()
+  // await status.save()
   return new SuccessResponseJSON(res, status)
 })

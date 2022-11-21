@@ -130,7 +130,7 @@ exports.deleteResponse = asyncHandler(async (req, res, next) => {
   if (!response) {
     return new ErrorResponseJSON(res, "Response not found!", 404)
   }
-  await response.save()
+  // await response.save()
   return new SuccessResponseJSON(res, response)
 })
 
@@ -144,6 +144,6 @@ exports.  deleteAllResponses = asyncHandler(async (req, res, next) => {
   //   return new ErrorResponseJSON(res, "Response not found!", 404)
   // }
   console.log("All responses deleted".bgRed)
-  await response.save()
+  // await response.save()
   return new SuccessResponseJSON(res, response)
 })
