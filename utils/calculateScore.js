@@ -107,7 +107,9 @@ exports.phaseQPS = async initiative => {
           })
           console.log(phase_criteria_score)
 
+          console.log("phase_score - pre: ", phase_score)
           phase_score += (criterion_score / max_score) * criterion.percentage
+          console.log("phase_score - post: ", phase_score)
         }
       }
 
@@ -183,7 +185,8 @@ exports.phaseQPS = async initiative => {
         phase.has_violation = false
       }
       
-      await phase.save()
+      // await phase.save()
+      await phase.update()
     }
     // this.allPhaseQPS = phase_result // likely to break
     return phase_result
