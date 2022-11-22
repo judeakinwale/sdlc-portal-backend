@@ -80,7 +80,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
     if (!relatedGates || relatedGates.length < 1) {
       relatedGates = await Gate.find({initiativeType: initiativeType._id})
     }
-    
+
     // const gates = await initiativeType.gates.map(async (gate) => {
     const gates = await relatedGates.map(async (gate) => {
       const payload = {
@@ -402,4 +402,164 @@ exports.generateQASerialNumber = async (prefix = 'LBAN', padding = 4, sep = ' ',
     )
   }
   return serial
+}
+
+exports.ensureValidInitiative  = async (initiative) => {
+  const startTime = Date.now()
+  // Create statuses
+  // get or create a pending status object
+  const pendingStatus = await Status.findOneAndUpdate({title: 'Pending'}, {}, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  })
+  // get or create a undetermined status object
+  const undeterminedStatus = await Status.findOneAndUpdate({title: 'Undetermined'}, {}, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  })
+  // get or create a started status object
+  const startedStatus = await Status.findOneAndUpdate({title: 'Started'}, {}, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  })
+  // get or create a completed status object
+  const completedStatus = await Status.findOneAndUpdate({title: 'Completed'}, {}, {
+    upsert: true,
+    new: true,
+    runValidators: true,
+  })
+
+  try {
+    // get or create phases for the gates of the initiative type
+    const initiativeType =  initiative.type
+
+    let relatedGates = initiativeType.gates
+    if (!relatedGates || relatedGates.length < 1) {
+      relatedGates = await Gate.find({initiativeType: initiativeType._id})
+    }
+    
+    // const gates = await initiativeType.gates.map(async (gate) => {
+    const gates = await relatedGates.map(async (gate) => {
+      const payload = {
+        initiative: initiative._id,
+        initiativeType: initiativeType._id,
+        gate: gate._id,
+        order: gate.order,
+      }
+      const getOrCreatePhase = await Phase.findOneAndUpdate(payload, {status: pendingStatus._id}, {
+        upsert: true,
+        new: true,
+        runValidators: true,
+      })
+      // console.log('initiative phases (gates) being created', getOrCreatePhase, "\n")
+    })
+    // console.log("initiativeType, gates : ", initiativeType, gates, "\n")
+  
+  
+    // get related phases (gate details) for getting phase, quality stage gate and delivery phase
+    const relatedPhases = await Phase.find({initiative: initiative._id}).sort('order').populate('gate status')
+    // console.log("relatedPhases : ", relatedPhases, "\n")
+  
+  
+    // set quality stage gate and quality stage gate details
+    let qualityStageGateDetails
+    let qualityStageGate
+    try {
+      qualityStageGateDetails = await Phase.findOne({
+        initiative: initiative._id, 
+        has_violation: true, 
+        status: undeterminedStatus._id
+      }).sort('order').populate('gate status')
+      qualityStageGate = await Gate.findById(qualityStageGateDetails.gate)
+    } catch(err) {
+      console.log("Quality Stage Gate details and Quality Stage Gate not found: ", err.message, ". Using default values", "\n")
+      qualityStageGateDetails = await Phase.findOne({
+        initiative: initiative._id,
+        order: 1, 
+      }).sort('order').populate('gate status')
+      qualityStageGate = await Gate.findById(qualityStageGateDetails.gate)
+    }
+    console.log("qualityStageGateDetails, qualityStageGate : ", qualityStageGateDetails._id, qualityStageGate._id, "\n")
+  
+  
+    // set delivery phase and delivery phase details
+    let deliveryPhaseDetails
+    let deliveryPhase
+    try {
+      // const startedDeliveryPhaseDetails = await Phase.findOne({
+      //   initiative: initiative._id, 
+      //   status: startedStatus._id, 
+      //   has_violation: false
+      // }).sort('order').populate('gate status')   
+
+      // const completedDeliveryPhaseDetails = await Phase.findOne({
+      //   initiative: initiative._id, 
+      //   status: completedStatus._id, 
+      //   has_violation: false
+      // }).sort('order').populate('gate status')
+      // console.log("startedDeliveryPhaseDetails, completedDeliveryPhaseDetails: ", startedDeliveryPhaseDetails, completedDeliveryPhaseDetails)
+      // deliveryPhaseDetails = startedDeliveryPhaseDetails || completedDeliveryPhaseDetails
+
+      deliveryPhaseDetails = await Phase.findOne({
+        initiative: initiative._id, 
+        $or: [{status: startedStatus._id}, {status: completedStatus._id}], 
+        has_violation: false
+      }).sort('order').populate('gate status')
+      console.log("deliveryPhaseDetails : ", deliveryPhaseDetails._id, "\n")
+      deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
+    } catch(err) {
+      console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values", "\n")
+      deliveryPhaseDetails = await Phase.findOne({
+        initiative: initiative._id,
+        order: 1, 
+      }).sort('order').populate('gate status')
+      deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
+    }
+    console.log("deliveryPhaseDetails, deliveryPhase : ", deliveryPhaseDetails._id, deliveryPhase._id, "\n")
+  
+  
+    // set phase and phase details
+    let phaseDetails
+    let phase
+    try {   
+      phase = initiative.phase
+      phaseDetails = await Phase.findOne({
+        initiative: initiative._id, 
+        gate: phase._id
+        // $or: [{status: startedStatus._id}, {status: completedStatus._id}], 
+        // has_violation: true
+      }).sort('order').populate('gate status')
+    } catch(err) {
+      console.log("Phase details and Phase not found: ", err.message, ". Using default values", "\n")
+      phaseDetails = await Phase.findOne({
+        initiative: initiative._id,
+        order: 1, 
+      }).sort('order').populate('gate status')
+      phase = await Gate.findById(phaseDetails.gate)
+    }
+    console.log("phaseDetails, phase : ", phaseDetails._id, phase._id, "\n")
+  
+  
+    // update the initiative
+    initiative.serialNumber = initiative.serialNumber || await this.generateQASerialNumber()
+    initiative.qualityStageGate = qualityStageGate
+    initiative.qualityStageGateDetails = qualityStageGateDetails
+    initiative.deliveryPhase = deliveryPhase
+    initiative.deliveryPhaseDetails = deliveryPhaseDetails
+    initiative.phase = phase
+    initiative.phaseDetails = phaseDetails
+  
+    await initiative.save()
+    console.log("initiative (final - valid) : ", initiative._id, initiative.conformanceStatus, "\n")
+  
+    const endTime = Date.now()
+    console.log(`validating initiative took ${(endTime - startTime) / 1000} seconds`)
+    return initiative
+  } catch (error) {
+    console.err(`${error.message}`.red)
+    throw new Error(`Invalid Initiative: ${error.message}`)
+  }
 }

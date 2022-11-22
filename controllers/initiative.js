@@ -5,7 +5,7 @@ const Gate = require("../models/Gate")
 const Phase = require("../models/Phase")
 const Type = require("../models/Type")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
-const {createOrUpdateInitiative} = require("../utils/initiativeUtils")
+const {createOrUpdateInitiative, ensureValidInitiative} = require("../utils/initiativeUtils")
 const {phaseQPS, conformanceStatus} = require("../utils/calculateScore")
 
 
@@ -96,7 +96,8 @@ exports.getInitiative = asyncHandler(async (req, res, next) => {
   if (!initiative) {
     return new ErrorResponseJSON(res, "Initiative not found!", 404)
   }
-  return new SuccessResponseJSON(res, initiative)
+  const validatedInitiative = await ensureValidInitiative(initiative)
+  return new SuccessResponseJSON(res, validatedInitiative)
 })
 
 
