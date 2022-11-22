@@ -8,6 +8,7 @@ const Response = require("../models/Response")
 const { phaseQPS } = require("../utils/calculateScore")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 const Gate = require("../models/Gate")
+const Status = require("../models/Status")
 
 
 exports.populateResponse = {path: "staff initiative phase gate criterion item prefix"}
@@ -25,10 +26,38 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
 
   const criterion = req.body.criterion ? await  Criterion.findById(req.body.criterion) : await  Criterion.findById(item.criterion)
   req.body.criterion = criterion._id
-  const gate = req.body.gate ? req.body.gate : await Gate.findById(criterion.gate)._id
-  req.body.gate = gate
-  const phase = req.body.phase ? req.body.phase : await Phase.findOne({initiative: req.body.initiative, gate: req.body.gate})._id
-  req.body.phase = phase
+  // // const gate = req.body.gate ? req.body.gate : await Gate.findById(criterion.gate)._id
+  // const gate = req.body.gate ? req.body.gate : criterion.gate
+  // req.body.gate = gate
+  req.body.gate = req.body.gate || criterion.gate
+
+  // create phase if it doesn't exist
+  console.log(req.body.gate)
+  if (!req.body.phase) {
+    console.log("req.body.phase not found")
+    const initInitiative = await Initiative.findById(req.body.initiative)
+    const initGate = await Gate.findById(req.body.gate)
+    const pendingStatus = await Status.findOneAndUpdate({title: 'Pending'}, {}, {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    })
+    const initPhase = await Phase.findOneAndUpdate(
+      {initiative: req.body.initiative, gate: req.body.gate}, 
+      {initiativeType: initInitiative.type, order: initGate.order, status: pendingStatus},
+      {
+        new: true,
+        runValidators: true,
+        upsert: true
+      }
+    )
+    // console.log("createdPhase: ", initPhase)
+    console.log("Initiative: ", initInitiative)
+    req.body.phase = initPhase._id
+  }
+
+  // const phase = req.body.phase ? req.body.phase : await Phase.findOneAndUpdate({initiative: req.body.initiative, gate: req.body.gate}, )._id
+  // req.body.phase = phase
 
   // if (!("phase" in body) && "gate" in body) {
   //   const getPhase  = await Phase.findOne(initiative=req.body.initiative, gate=req.body.gate)
@@ -77,6 +106,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
 
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)
+  console.log("phaseQps ran")
 
   return new SuccessResponseJSON(res, response, 201)
 })

@@ -9,6 +9,7 @@ const Response = new mongoose.Schema({
   initiative: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Initiative",
+    required: true,
   },
   phase: {
     type: mongoose.Schema.Types.ObjectId,

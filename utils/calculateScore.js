@@ -1,9 +1,11 @@
 const asyncHandler = require("../middleware/async");
+const Criterion = require("../models/Criterion");
 const Gate = require("../models/Gate");
 const Item = require("../models/Item");
 const Phase = require("../models/Phase");
 const Prefix = require("../models/Prefix");
-const Response = require("../models/Response")
+const Response = require("../models/Response");
+const Status = require("../models/Status");
 
 
 // exports.allPhaseQPS = {} // likely to break
@@ -53,7 +55,10 @@ exports.phaseQPS = async initiative => {
       phase_result[index].order = phase.order
 
       let phase_gate = await Gate.findById(phase.gate)
-      const phase_criteria = phase_gate.criteria
+      // const phase_criteria = phase_gate.criteria
+      const phase_criteria = await Criterion.find({gate: phase_gate._id})
+      // console.log("phase_gate; ", phase_gate)
+      // console.log("phase_criteria; ", phase_criteria)
 
       let phase_score = 0
       let phase_criteria_score = []
@@ -69,6 +74,13 @@ exports.phaseQPS = async initiative => {
           phase: phase._id,
           criterion: criterion._id
         }).populate("criterion item prefix")
+        // console.log(
+        //   phase.initiative,
+        //   phase._id,
+        //   criterion._id,
+        // )
+
+        console.log("phase_responses: ", phase_responses)
 
         phase_responses_length += phase_responses.length
 
@@ -93,6 +105,7 @@ exports.phaseQPS = async initiative => {
             unweightedScore: (criterion_score / max_score), 
             score: weighted_criterion_score,
           })
+          console.log(phase_criteria_score)
 
           phase_score += (criterion_score / max_score) * criterion.percentage
         }
@@ -104,20 +117,68 @@ exports.phaseQPS = async initiative => {
       
       // console.log(`\nphase_responses_length: ${phase_responses_length},\nphase_criteria_item_length: ${phase_criteria_item_length}`)
 
+
+      // Create statuses
+      // get or create a pending status object
+      const pendingStatus = await Status.findOneAndUpdate({title: 'Pending'}, {}, {
+        upsert: true,
+        new: true,
+        runValidators: true,
+      })
+      // get or create a undetermined status object
+      const undeterminedStatus = await Status.findOneAndUpdate({title: 'Undetermined'}, {}, {
+        upsert: true,
+        new: true,
+        runValidators: true,
+      })
+      // get or create a started status object
+      const startedStatus = await Status.findOneAndUpdate({title: 'Started'}, {}, {
+        upsert: true,
+        new: true,
+        runValidators: true,
+      })
+      // get or create a completed status object
+      const completedStatus = await Status.findOneAndUpdate({title: 'Completed'}, {}, {
+        upsert: true,
+        new: true,
+        runValidators: true,
+      })
+      // console.log("statuses : ", pendingStatus, undeterminedStatus, startedStatus, completedStatus, "\n")
+    
+    
+
+      // if (phase_responses_length == phase_criteria_item_length) {
+      //   phase.status.title = "Completed"
+      // } else if (phase_responses_length == 0) {
+      //   phase.status.title = "Pending"
+      // } else {
+      //   phase.status.title = "Started"
+      // }
+
       if (phase_responses_length == phase_criteria_item_length) {
-        phase.status.title = "Completed"
+        phase.status = completedStatus._id
       } else if (phase_responses_length == 0) {
-        phase.status.title = "Pending"
+        phase.status = pendingStatus._id
       } else {
-        phase.status.title = "Started"
+        phase.status = startedStatus._id
       }
       
+      // if (phase.status.title == "Started" && phase_score < passScore ) {
+      //   phase.has_violation = true
+      //   // phase.status.title = "Undetermined"
+      // } else if (phase.status.title == "Completed" && phase_score < passScore) {
+      //   phase.has_violation = true
+      //   phase.status.title = "Undetermined"
+      // } else {
+      //   phase.has_violation = false
+      // }
+
       if (phase.status.title == "Started" && phase_score < passScore ) {
         phase.has_violation = true
-        // phase.status.title = "Undetermined"
+        // phase.status = undeterminedStatus._id
       } else if (phase.status.title == "Completed" && phase_score < passScore) {
         phase.has_violation = true
-        phase.status.title = "Undetermined"
+        phase.status = undeterminedStatus._id
       } else {
         phase.has_violation = false
       }
@@ -128,6 +189,7 @@ exports.phaseQPS = async initiative => {
     return phase_result
 
   } catch (err) {
+    console.error(err)
     phase_result = false
     return phase_result
   }

@@ -49,7 +49,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     })
-    console.log("statuses : ", pendingStatus, undeterminedStatus, startedStatus, completedStatus, "\n")
+    // console.log("statuses : ", pendingStatus, undeterminedStatus, startedStatus, completedStatus, "\n")
   
   
     // try getting or creating an initiative type
@@ -75,7 +75,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
   
     // get or create phases for the gates of the initiative type
     const initiativeType =  initiative.type
-    const gates = await initiativeType.gates.map(async (gate) => {
+
+    let relatedGates = initiativeType.gates
+    if (!relatedGates || relatedGates.length < 1) {
+      relatedGates = await Gate.find({initiativeType: initiativeType._id})
+    }
+    
+    // const gates = await initiativeType.gates.map(async (gate) => {
+    const gates = await relatedGates.map(async (gate) => {
       const payload = {
         initiative: initiative._id,
         initiativeType: initiativeType._id,
@@ -87,14 +94,14 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
         new: true,
         runValidators: true,
       })
-      console.log('initiative phases (gates) being created', getOrCreatePhase, "\n")
+      // console.log('initiative phases (gates) being created', getOrCreatePhase, "\n")
     })
-    console.log("initiativeType, gates : ", initiativeType, gates, "\n")
+    // console.log("initiativeType, gates : ", initiativeType, gates, "\n")
   
   
     // get related phases (gate details) for getting phase, quality stage gate and delivery phase
     const relatedPhases = await Phase.find({initiative: initiative._id}).sort('order').populate('gate status')
-    console.log("relatedPhases : ", relatedPhases, "\n")
+    // console.log("relatedPhases : ", relatedPhases, "\n")
   
   
     // set quality stage gate and quality stage gate details
@@ -115,7 +122,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       }).sort('order').populate('gate status')
       qualityStageGate = await Gate.findById(qualityStageGateDetails.gate)
     }
-    console.log("qualityStageGateDetails, qualityStageGate : ", qualityStageGateDetails, qualityStageGate, "\n")
+    // console.log("qualityStageGateDetails, qualityStageGate : ", qualityStageGateDetails, qualityStageGate, "\n")
   
   
     // set delivery phase and delivery phase details
@@ -136,7 +143,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       }).sort('order').populate('gate status')
       deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
     }
-    console.log("deliveryPhaseDetails, deliveryPhase : ", deliveryPhaseDetails, deliveryPhase, "\n")
+    // console.log("deliveryPhaseDetails, deliveryPhase : ", deliveryPhaseDetails, deliveryPhase, "\n")
   
   
     // set phase and phase details
@@ -158,7 +165,7 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
       }).sort('order').populate('gate status')
       phase = await Gate.findById(phaseDetails.gate)
     }
-    console.log("phaseDetails, phase : ", phaseDetails, phase, "\n")
+    // console.log("phaseDetails, phase : ", phaseDetails, phase, "\n")
   
   
     // update the initiative

@@ -10,6 +10,6 @@ router.get("/", advancedResults(Item, populateItem), getAllItems); // get all it
 router.get("/:id", verifyToken, getItem); // get item details by id
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updateItem); // update item details by id
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deleteItem); // delete item by id
-router.delete("/delete/all/items", deleteAllItems); // delete response by id
+router.delete("/delete/all/items", verifyToken, authorize("HR", "Admin"), deleteAllItems); // delete response by id
 
 module.exports = router;
