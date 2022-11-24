@@ -41,6 +41,7 @@ exports.phaseQPS = async initiative => {
   let phase_result = []
   let phase_criteria_item_length = 0
   let phase_responses_length = 0
+  let totalPhaseCriteriaScores = []
 
   try {
     let max_prefix_score = Math.max.apply(Math,prefixes.map(function(o){return o.score;}))
@@ -71,14 +72,14 @@ exports.phaseQPS = async initiative => {
 
         const phase_responses = await Response.find({
           initiative: phase.initiative,
-          phase: phase._id,
+          // phase: phase._id,
           criterion: criterion._id
         }).populate("criterion item prefix")
-        // console.log(
-        //   phase.initiative,
-        //   phase._id,
-        //   criterion._id,
-        // )
+        console.log(
+          phase.initiative,
+          phase._id,
+          criterion._id,
+        )
 
         console.log("phase_responses: ", phase_responses)
 
@@ -93,7 +94,7 @@ exports.phaseQPS = async initiative => {
         for (const[key, response] of Object.entries(phase_responses)) {
           criterion_score  += response.prefix.score
         }
-
+        console.log("criterion_score:", criterion_score)
         if (max_score == 0) {
           phase_score += 0
         } else {
@@ -105,11 +106,19 @@ exports.phaseQPS = async initiative => {
             unweightedScore: (criterion_score / max_score), 
             score: weighted_criterion_score,
           })
-          console.log(phase_criteria_score)
+          console.log("phase_criteria_score: ", phase_criteria_score)
 
           console.log("phase_score - pre: ", phase_score)
           phase_score += (criterion_score / max_score) * criterion.percentage
           console.log("phase_score - post: ", phase_score)
+
+          // totalPhaseCriteriaScores = [...totalPhaseCriteriaScores, phase_criteria_score]
+          totalPhaseCriteriaScores.push({
+            criterion: criterion_id, 
+            unweightedScore: (criterion_score / max_score), 
+            score: weighted_criterion_score,
+          })
+          console.log("totalPhaseCriteriaScores: ", totalPhaseCriteriaScores)
         }
       }
 
@@ -185,8 +194,13 @@ exports.phaseQPS = async initiative => {
         phase.has_violation = false
       }
       
-      // await phase.save()
-      await phase.update()
+      await phase.save()
+      // await phase.update()
+    }
+
+    for (const [key, phase] of Object.entries(phases)) {
+      phase.criteriaScores = totalPhaseCriteriaScores
+      await phase.save()
     }
     // this.allPhaseQPS = phase_result // likely to break
     return phase_result

@@ -48,7 +48,7 @@ exports.populateInitiative = [
   },
   {
   path :"responses",
-  populate: [{path: "item prefix"}]
+  populate: [{path: "item prefix criterion"}]
   },
 ],
 
