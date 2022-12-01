@@ -10,7 +10,7 @@ const {ErrorResponseJSON, SuccessResponseJSON} = require('../utils/errorResponse
 exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
 
 
-exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
+exports.createOrUpdateInitiativeDepreciated = asyncHandler(async (req, res) => {
   try {
     const authUser = req.user
     const body = {...req.body}
@@ -188,204 +188,6 @@ exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
 })
 
 
-// exports.createOrUpdateInitiativeDepreciated = asyncHandler(async (req, res) => {
-//   const {user, body} = req
-
-//   if (!req.body.serialNumber) {
-//     req.body.serialNumber = await this.generateQASerialNumber()
-//   }
-
-//   let existingInitiative
-//   let initiativeType
-
-//   if (req.params.id) {
-//     existingInitiative = await Initiative.findById(req.params.id)
-//     initiativeType = await Type.findById(existingInitiative.type)
-//   } else {
-//     existingInitiative = await Initiative.findOne({title: body.title})
-//     initiativeType = await Type.findById(body.type)
-//     console.log('resolved body.type', initiativeType, body.type)
-//     body.requesterName = req.user.fullname
-//     body.requesterEmail = req.user.email
-//   }
-
-//   let qualityStageGate
-//   let deliveryPhase
-//   if ('qualityStageGate' in body && 'deliveryPhase' in body) {
-//     deliveryPhase = await Gate.findById(body.deliveryPhase)
-//     qualityStageGate = await Gate.findById(body.qualityStageGate)
-//   }
-
-//   // // TODO: Comment code below if QA Manager is to assign a QA Engineer
-//   // if (!("qualityAssuranceEngineer" in body)) {
-//   //   body.qualityAssuranceEngineer = req.user
-//   // }
-
-//   let phase
-//   try {
-//     if ('phase' in body) {
-//       phase = await Gate.findById(body.phase)
-//     } else if (req.params.id) {
-//       phase = await Gate.findById(existingInitiative.phase)
-//       // console.log(phase)
-//     } else {
-//       phase = await Gate.findOne({initiativeType: initiativeType._id, order: 1})
-//       body.phase = phase
-//     }
-//   } catch (err) {
-//     console.log(`Error getting Phase: ${err} `)
-//     return new ErrorResponseJSON(res, 'Error getting phase!', 400)
-//   }
-
-//   let initiative
-//   if (existingInitiative) {
-//     initiative = await Initiative.findByIdAndUpdate(existingInitiative.id, req.body, {
-//       new: true,
-//       runValidators: true,
-//     })
-//   } else {
-//     if (req.params.id) {
-//       return new ErrorResponseJSON(res, 'Existing Initiative not found!', 404)
-//     } else {
-//       initiative = await Initiative.create(req.body)
-//     }
-//   }
-
-//   // create phases for all gates of the selected initiative type
-//   for (const [key, gate] of Object.entries(initiativeType.gates)) {
-//     try {
-
-
-//       // const foundPhase = await Phase.findOne({
-//       //   initiative: initiative._id,
-//       //   initiativeType: initiativeType._id,
-//       //   gate: gate._id,
-//       //   order: gate.order
-//       // })
-//       // if (!foundPhase ) {
-//       //   const getOrCreatePendingStatus = await Status.findOneAndUpdate({title: "Pending"}, {}, {upsert: true})
-//       //   console.log(getOrCreatePendingStatus)
-//       //   const createdPhase = await Phase.create({
-//       //     initiative: initiative._id,
-//       //     initiativeType: initiativeType._id,
-//       //     gate: gate._id,
-//       //     order: gate.order,
-//       //     status: getOrCreatePendingStatus._id,
-//       //   })
-//       //   console.log("in try catch block", createdPhase)
-//       // }
-
-//       const payload = {
-//         initiative: initiative._id,
-//         initiativeType: initiativeType._id,
-//         gate: gate._id,
-//         order: gate.order,
-//       }
-//       const getOrCreatePendingStatus = await Status.findOneAndUpdate(
-//         {title: 'Pending'},
-//         {},
-//         {upsert: true, new: true, runValidators: true}
-//       )
-//       console.log(getOrCreatePendingStatus)
-
-//       const getOrCreatePhase = await Phase.findOneAndUpdate(
-//         payload,
-//         {status: getOrCreatePendingStatus._id},
-//         {upsert: true, new: true, runValidators: true}
-//       )
-//       console.log('in try catch block', getOrCreatePhase)
-
-//     } catch (err) {
-//       console.log('Phase not found: ', err)
-
-//       const getOrCreatePendingStatus = await Status.findOneAndUpdate({title: 'Pending'}, {}, {upsert: true})
-//       console.log(getOrCreatePendingStatus)
-//       const createdPhase = await Phase.create({
-//         initiative: initiative._id,
-//         initiativeType: initiativeType._id,
-//         gate: gate._id,
-//         order: gate.order,
-//         status: getOrCreatePendingStatus._id,
-//       })
-//       console.log(createdPhase)
-//     }
-//   }
-
-//   const relatedPhases = await Phase.find({initiative: initiative._id}).sort('order').populate('gate status')
-//   console.log('related phases after try catch: block', relatedPhases)
-
-//   // Get quality stage gate details (violations: true, status: "Undetermined")
-//   let qualityStageGateDetails
-//   for (const [key, phase] of Object.entries(relatedPhases)) {
-//     if (phase.has_violation == true && phase.status.title == 'Undetermined') {
-//       qualityStageGateDetails = await Phase.findById(phase._id)
-//       break
-//     }
-//   }
-
-//   // Update quality stage gate based off the above (gate id)
-//   if (!qualityStageGateDetails) {
-//     console.log("creating QSG details from QSG")
-//     qualityStageGate = await Gate.findOne({initiativeType: initiativeType._id, order: 1})
-//     console.log("found QSG: ", qualityStageGate)
-//     qualityStageGateDetails = await Phase.findOne({
-//       initiative: initiative._id,
-//       initiativeType: initiativeType._id,
-//       gate: qualityStageGate._id,
-//     })
-//     console.log("found QSG details: ", qualityStageGateDetails)
-
-//   }
-
-//   qualityStageGate = await Gate.findById(qualityStageGateDetails.gate)
-
-//   // Repeat the two actions above for delivery phase (violations: false, status: "Started")
-//   let deliveryPhaseDetails
-//   for (const [key, phase] of Object.entries(relatedPhases)) {
-//     let deliveryPhaseDetailsID = phase._id
-//     if (phase.status.title == 'Started' || (phase.status.title == 'Completed' && !phase.has_violation)) {
-//       deliveryPhaseDetails = await Phase.findById(deliveryPhaseDetailsID)
-//       break
-//     }
-//   }
-
-//   if (!deliveryPhaseDetails) {
-//     deliveryPhase = await Gate.findOne({initiativeType: initiativeType._id, order: 1})
-//     deliveryPhaseDetails = await Phase.findOne({
-//       initiative: initiative._id,
-//       initiativeType: initiativeType._id,
-//       gate: qualityStageGate._id,
-//     })
-//   }
-
-//   deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
-
-//   // get phase details
-//   let phaseDetails = await Phase.findOne({
-//     initiative: initiative._id,
-//     initiativeType: initiativeType._id,
-//     gate: body.phase,
-//   }).populate('gate')
-
-//   if (!phaseDetails) {
-//     phaseDetails = await Phase.findOne({
-//       initiative: initiative._id,
-//       initiativeType: initiativeType._id,
-//       gate: initiative.phase,
-//     }).populate('gate')
-//   }
-
-//   initiative.qualityStageGate = qualityStageGate
-//   initiative.qualityStageGateDetails = qualityStageGateDetails
-//   initiative.deliveryPhase = deliveryPhase
-//   initiative.deliveryPhaseDetails = deliveryPhaseDetails
-//   initiative.phaseDetails = phaseDetails
-
-//   await initiative.save()
-
-//   return initiative
-// })
-
 exports.generateQASerialNumber = async (prefix = 'LBAN', padding = 4, sep = ' ', startNum = 1) => {
   let numStr = startNum.toString().padStart(padding, '0')
   let serial = `${prefix}${sep}${numStr}`
@@ -404,7 +206,7 @@ exports.generateQASerialNumber = async (prefix = 'LBAN', padding = 4, sep = ' ',
   return serial
 }
 
-exports.ensureValidInitiative  = async (initiative) => {
+exports.ensureValidInitiativeDepreciated  = async (initiative) => {
   const startTime = Date.now()
   // Create statuses
   // get or create a pending status object
@@ -559,7 +361,258 @@ exports.ensureValidInitiative  = async (initiative) => {
     console.log(`validating initiative took ${(endTime - startTime) / 1000} seconds`)
     return initiative
   } catch (error) {
-    console.err(`${error.message}`.red)
+    console.error(`${error.message}`.red)
     throw new Error(`Invalid Initiative: ${error.message}`)
   }
 }
+
+
+/**
+ * @summary get or create related phases for initiative
+ * @param {Initiative} initiative 
+ * @param {{String: Status}} essentialStatuses 
+ * @returns 
+ */
+exports.relatedPhases = async (initiative, essentialStatuses) => {
+  if (!initiative._id) throw new Error("Invalid Initiative: has no Id!")
+  if (!initiative.type) throw new Error("Invalid Initiative: has no type!")
+  const initiativeTypeId = initiative.type._id ? initiative.type._id : initiative.type
+
+  const relatedGates = await Gate.find({initiativeType: initiativeTypeId})
+  // console.log('relatedGates', relatedGates.map((r) => r._id), "\n")
+
+  const relatedPhases = []
+  await Promise.all(await relatedGates.map(async (gate) => {
+    const payload = {
+      initiative: initiative._id,
+      initiativeType: initiativeTypeId,
+      gate: gate._id,
+      order: gate.order,
+    }
+    const getOrCreatePhase = await Phase.findOneAndUpdate(payload, {status: essentialStatuses.Pending._id}, {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    })
+    // console.log('initiative phases (gates) being created', getOrCreatePhase._id, "\n")
+    relatedPhases.push(getOrCreatePhase)
+  }))
+  // console.log('relatedPhases', relatedPhases, "\n")
+  console.log('relatedPhases', relatedPhases.map((r) => r._id), "\n")
+  return relatedPhases
+}
+
+/**
+ * @summary set the Quality Stage Gate and it's details
+ * @param {Initiative} initiative 
+ * @param {{String: Status}} essentialStatuses 
+ * @returns 
+ */
+exports.setQualityStageGateAndQualityStageGateDetails = async (initiative, essentialStatuses) => {
+  const populatePhase = 'gate status'
+  let QSGDetails
+  try {
+    QSGDetails = await Phase.findOne({
+      initiative: initiative._id, 
+      has_violation: true, 
+      $or: [{status: essentialStatuses.Undetermined._id}, {status: essentialStatuses.Pending._id}], 
+      // status: essentialStatuses.Undetermined._id
+    }).sort('order').populate(populatePhase)
+    if (!QSGDetails) throw new Error("Doesn't exist")
+  } catch(err) {
+    console.log("Quality Stage Gate details and Quality Stage Gate not found: ", err.message, ". Using default values", "\n")
+    QSGDetails = await Phase.findOne({
+      initiative: initiative._id,
+      order: 1, 
+    }).sort('order').populate(populatePhase)
+  }
+  const QSG = await Gate.findById(QSGDetails.gate)
+  console.log("qualityStageGateDetails, qualityStageGate : ", QSGDetails._id, QSG._id, "\n")
+  return {QSG, QSGDetails}
+}
+
+/**
+ * @summary set the Delivery Phase and it's details
+ * @param {Initiative} initiative 
+ * @param {{String: Status}} essentialStatuses 
+ * @returns 
+ */
+exports.setDeliveryPhaseAndDeliveryPhaseDetails = async (initiative, essentialStatuses) => {
+  const populatePhase = 'gate status'
+  let deliveryPhaseDetails
+  try {
+    deliveryPhaseDetails = await Phase.findOne({
+      initiative: initiative._id, 
+      has_violation: false,
+      $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
+      // status: essentialStatuses.Started._id,
+    }).sort('order').populate(populatePhase)
+    if (!deliveryPhaseDetails) throw new Error("Doesn't exist")
+  } catch(err) {
+    console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values", "\n")
+    deliveryPhaseDetails = await Phase.findOne({
+      initiative: initiative._id,
+      order: 1, 
+    }).sort('order').populate(populatePhase)
+  }
+  const deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
+  console.log("qualityStageGateDetails, qualityStageGate : ", deliveryPhaseDetails._id, deliveryPhase._id, "\n")
+  return {deliveryPhase, deliveryPhaseDetails}
+}
+
+/**
+ * @summary set the Phase and it's details
+ * @param {Initiative} initiative 
+ * @param {{String: Status}} essentialStatuses 
+ * @returns 
+ */
+exports.setPhaseAndPhaseDetails = async (initiative, essentialStatuses) => {
+  const populatePhase = 'gate status'
+  let phaseDetails
+  let phaseId
+  // let phase = initiative.phase
+  try {
+    if (!initiative.phase) throw new Error("Initiative.phase not found")
+    phaseId = initiative.phase._id ? initiative.phase._id : initiative.phase
+    phaseDetails = await Phase.findOne({
+      initiative: initiative._id, 
+      gate: phaseId,
+    }).sort('order').populate(populatePhase)
+    if (!phaseDetails) throw new Error("Doesn't exist")
+  } catch(err) {
+    console.log("Phase details and Phase not found: ", err.message, ". Using default values", "\n")
+    // phaseId = phaseDetails.gate
+    phaseDetails = await Phase.findOne({
+      initiative: initiative._id,
+      order: 1, 
+    }).sort('order').populate(populatePhase)
+  }
+  const phase = await Gate.findById(phaseDetails.gate)
+  console.log("phaseDetails, phase : ", phaseDetails._id, phase._id, "\n")
+  return {phase, phaseDetails}
+}
+
+// get or create statuses
+exports.essentialStatuses = async () => {
+  const getOrCreateStatus = async (title) => {
+    const status = await Status.findOneAndUpdate({title}, {}, {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    })
+    return status
+  }
+  return {
+    'Pending': await getOrCreateStatus('Pending'),
+    'Undetermined': await getOrCreateStatus('Undetermined'),
+    'Started': await getOrCreateStatus('Started'),
+    'Completed': await getOrCreateStatus('Completed'),
+  }
+}
+
+
+// validate initiative
+exports.ensureValidInitiative = async (initiative) => {
+  const startTime = Date.now()
+  const essentialStatuses = await this.essentialStatuses()
+
+  try {
+    // get related phases
+    const relatedPhases = await this.relatedPhases(initiative, essentialStatuses)
+  
+    // set quality stage gate and quality stage gate details
+    const { QSG, QSGDetails } = await this.setQualityStageGateAndQualityStageGateDetails(initiative, essentialStatuses)
+
+    // set delivery phase and delivery phase details
+    const { deliveryPhase, deliveryPhaseDetails } = await this.setDeliveryPhaseAndDeliveryPhaseDetails(initiative, essentialStatuses)
+    
+    // set phase and phase details
+    const { phase, phaseDetails } = await this.setPhaseAndPhaseDetails(initiative, essentialStatuses)
+  
+    // update the initiative
+    initiative.serialNumber = initiative.serialNumber || await this.generateQASerialNumber()
+    initiative.qualityStageGate = QSG
+    initiative.qualityStageGateDetails = QSGDetails
+    initiative.deliveryPhase = deliveryPhase
+    initiative.deliveryPhaseDetails = deliveryPhaseDetails
+    initiative.phase = phase
+    initiative.phaseDetails = phaseDetails
+
+    // initiative.qualityStageGate = QSG._id
+    // initiative.qualityStageGateDetails = QSGDetails._id
+    // initiative.deliveryPhase = deliveryPhase._id
+    // initiative.deliveryPhaseDetails = deliveryPhaseDetails._id
+    // initiative.phaseDetails = phaseDetails._id
+    // initiative.phase = phase._id
+
+    await initiative.save()
+    console.log("initiative (final - valid) : ", initiative._id, initiative.conformanceStatus, "\n")
+  
+    const endTime = Date.now()
+    console.log(`validating initiative took ${(endTime - startTime) / 1000} seconds`)
+    return initiative
+  } catch (error) {
+    console.error(`${error.message}`.red)
+    throw new Error(`Invalid Initiative: ${error.message}`)
+  }  
+}
+
+
+exports.createOrUpdateInitiative = asyncHandler(async (req, res) => {
+  try {
+    const body = {...req.body, requesterName: req.user.fullname, requesterEmail: req.user.email}
+    const essentialStatuses = await this.essentialStatuses()
+    
+    // console.log("body (payload) : ", body, "\n"),,
+    
+    // try getting or creating an initiative type
+    let initiative
+    try {
+      if (req.params.id) {
+        initiative = await Initiative.findByIdAndUpdate(req.params.id, body, {
+          new: true,
+          runValidators: true,
+        }).populate(this.populateInitiative)
+      } else {
+        initiative = await Initiative.findOneAndUpdate({title: body.title}, body, {
+          upsert: true,
+          new: true,
+          runValidators: true,
+        }).populate(this.populateInitiative)
+      }
+    } catch(err) {
+      console.log("Error getting or creating Initiatives: ", err.message, "\n")
+    }
+    console.log("initiative (initial) : ", initiative._id, "\n")
+  
+
+    // get related phases
+    const relatedPhases = await this.relatedPhases(initiative, essentialStatuses)
+  
+    // set quality stage gate and quality stage gate details
+    const { QSG, QSGDetails } = await this.setQualityStageGateAndQualityStageGateDetails(initiative, essentialStatuses)
+
+    // set delivery phase and delivery phase details
+    const { deliveryPhase, deliveryPhaseDetails } = await this.setDeliveryPhaseAndDeliveryPhaseDetails(initiative, essentialStatuses)
+    
+    // set phase and phase details
+    const { phase, phaseDetails } = await this.setPhaseAndPhaseDetails(initiative, essentialStatuses)
+
+    // update the initiative
+    initiative.serialNumber = initiative.serialNumber || await this.generateQASerialNumber()
+    initiative.qualityStageGate = QSG._id
+    initiative.qualityStageGateDetails = QSGDetails._id
+    initiative.deliveryPhase = deliveryPhase._id
+    initiative.deliveryPhaseDetails = deliveryPhaseDetails._id
+    initiative.phaseDetails = phaseDetails._id
+    initiative.phase = phase._id
+  
+    await initiative.save()
+    console.log("initiative (final) : ", initiative._id, "\n")
+  
+    return initiative
+  } catch(err) {
+    throw new ErrorResponseJSON(res, err.message, 500)
+  }
+  
+})

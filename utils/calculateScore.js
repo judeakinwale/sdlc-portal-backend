@@ -8,31 +8,31 @@ const Response = require("../models/Response");
 const Status = require("../models/Status");
 
 
-// exports.allPhaseQPS = {} // likely to break
-exports.conformanceStatus = async initiative => {
-  /**
-   * RAG : "Red", "Amber", "Green"
-   */
-  const phases = await Phase.find({initiative: initiative._id});
-  let initiative_score = 0
-  let passScore = initiative.passScore || 70
-  // count = 0
-  for (const [key, phase] of Object.entries(phases)) {
-    initiative_score += phase.score
-    // if (phase.score != 0) count += 1  
-  }
-  let conformanceStatus = "Red"
-  if (initiative_score >= passScore) {
-    conformanceStatus = "Green"
-  } else if (initiative_score >= 50) {
-    conformanceStatus = "Amber"
-  } 
-  initiative.score = initiative_score
-  initiative.conformanceStatus = conformanceStatus
-  await initiative.save()
+//// exports.allPhaseQPS = {} // likely to break
+// exports.conformanceStatus = async initiative => {
+//   /**
+//    * RAG : "Red", "Amber", "Green"
+//    */
+//   const phases = await Phase.find({initiative: initiative._id});
+//   let initiative_score = 0
+//   let passScore = initiative.passScore || 70
+//   // count = 0
+//   for (const [key, phase] of Object.entries(phases)) {
+//     initiative_score += phase.score
+//     // if (phase.score != 0) count += 1  
+//   }
+//   let conformanceStatus = "Red"
+//   if (initiative_score >= passScore) {
+//     conformanceStatus = "Green"
+//   } else if (initiative_score >= 50) {
+//     conformanceStatus = "Amber"
+//   } 
+//   initiative.score = initiative_score
+//   initiative.conformanceStatus = conformanceStatus
+//   await initiative.save()
 
-  return conformanceStatus
-}
+//   return conformanceStatus
+// }
 
 exports.phaseQPS = async initiative => {
   const phases = await Phase.find({initiative: initiative._id}).populate("status");
@@ -212,3 +212,37 @@ exports.phaseQPS = async initiative => {
   }
   
 };
+
+
+/**
+ * 
+ * @param {Initiative} initiative 
+ * @returns {RAG} "Red" || "Amber" || "Green"
+ */
+exports.conformanceStatus = async initiative => {
+  const phases = await Phase.find({initiative: initiative._id});
+  // let score = 0
+  let passScore = Number(initiative.passScore) || 70
+  // for (const [key, phase] of Object.entries(phases)) {
+  //   score += phase.score
+  //   // if (phase.score != 0) count += 1  
+  // }
+  const score = phases.reduce((prev, curr) => (prev + (Number(curr.score) || 0)), 0)
+  console.log("score:", score)
+
+  // if (score >= passScore) return "Green"
+  // if (score >= 50) return "Amber"
+  // return "Red"
+
+  let status = "Red"
+  if (score >= passScore) {
+    status = "Green"
+  } else if (score >= 50) {
+    status = "Amber"
+  } 
+  initiative.score = score
+  initiative.conformanceStatus = status
+  await initiative.save()
+
+  return status
+}

@@ -109,7 +109,7 @@ exports.updateInitiative = asyncHandler(async (req, res, next) => {
   const initiative = await createOrUpdateInitiative(req, res)
 
   // Test calculating the QPS score
-  const tempQPS = await phaseQPS(initiative)
+  // const tempQPS = await phaseQPS(initiative)
 
   await initiative.save()
 
@@ -120,7 +120,7 @@ exports.updateInitiative = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: initiative,
-    phase_dict: tempQPS,
+    // phase_dict: tempQPS,
   })
 })
 
