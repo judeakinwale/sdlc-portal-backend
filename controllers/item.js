@@ -3,6 +3,7 @@ const asyncHandler = require("../middleware/async")
 const Criterion = require("../models/Criterion")
 const Gate = require("../models/Gate")
 const Item = require("../models/Item")
+const { checkTotalItemScore } = require("../utils/calculateScore")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
@@ -22,6 +23,12 @@ exports.createItem = asyncHandler(async (req, res, next) => {
   const criterion = await Criterion.findById(req.body.criterion)
   req.body.gate = criterion.gate
   req.body.initiativeType = criterion.initiativeType
+
+  const totalScore = await checkTotalItemScore(req.body.gate, req.body.score)
+  if (totalScore > 100) {
+    console.log("total score: ", totalScore)
+    return new ErrorResponseJSON(res, `Total score for the items in the phase exceeeds 100 by ${totalScore - 100}!: ${totalScore} `, 400)
+  }
   
   // const gate = await Gate.findById(req.body.gate)
   // req.body.initiativeType = gate.initiativeType
@@ -58,6 +65,24 @@ exports.getItem = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/item/:id
 // @access   Private
 exports.updateItem = asyncHandler(async (req, res, next) => {
+  
+  const existingItem = await Item.findById(req.params.id)
+  req.body.gate = existingItem.gate
+  req.body.previousScore = existingItem.score
+
+  if ("criterion" in req.body) {
+    const criterion = await Criterion.findById(req.body.criterion)
+    req.body.gate = criterion.gate
+    req.body.initiativeType = criterion.initiativeType
+  }
+
+  const totalScore = await checkTotalItemScore(req.body.gate, req.body.score, req.body.previousScore)
+  if (totalScore > 100) {
+    console.log("total score: ", totalScore)
+    return new ErrorResponseJSON(res, `Total score for the items in the phase exceeeds 100 by ${totalScore - 100}!: ${totalScore} `, 400)
+  }
+
+
   const item = await Item.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -65,6 +90,7 @@ exports.updateItem = asyncHandler(async (req, res, next) => {
   if (!item) {
     return new ErrorResponseJSON(res, "Item not updated!", 404)
   }
+
   await item.save()
   return new SuccessResponseJSON(res, item)
 })

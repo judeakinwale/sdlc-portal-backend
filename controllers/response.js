@@ -5,7 +5,7 @@ const Item = require("../models/Item")
 const Criterion = require("../models/Criterion")
 const Phase = require("../models/Phase")
 const Response = require("../models/Response")
-const { phaseQPS } = require("../utils/calculateScore")
+const { phaseQPS, getResponseScore } = require("../utils/calculateScore")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 const Gate = require("../models/Gate")
 const Status = require("../models/Status")
@@ -102,6 +102,8 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   //   return new ErrorResponseJSON(res, "Response not created!", 404)
   // }
 
+  response.score = await getResponseScore(response)
+
   await response.save()
 
   const initiative = await Initiative.findById(response.initiative)
@@ -143,11 +145,12 @@ exports.updateResponse = asyncHandler(async (req, res, next) => {
   if (!response) {
     return new ErrorResponseJSON(res, "Response not updated!", 404)
   }
+  response.score = await getResponseScore(response)
+  await response.save()
 
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)
 
-  await response.save()
   return new SuccessResponseJSON(res, response)
 })
 

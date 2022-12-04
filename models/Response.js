@@ -34,6 +34,10 @@ const Response = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Prefix",
   },
+  score: {
+    type: Number,
+    // required: true,
+  },
   issues: {
     type: String,
   },

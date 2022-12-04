@@ -386,6 +386,7 @@ exports.relatedPhases = async (initiative, essentialStatuses) => {
     const payload = {
       initiative: initiative._id,
       initiativeType: initiativeTypeId,
+      passScore: initiative.passScore,
       gate: gate._id,
       order: gate.order,
     }
@@ -415,7 +416,7 @@ exports.setQualityStageGateAndQualityStageGateDetails = async (initiative, essen
     QSGDetails = await Phase.findOne({
       initiative: initiative._id, 
       has_violation: true, 
-      $or: [{status: essentialStatuses.Undetermined._id}, {status: essentialStatuses.Pending._id}], 
+      // $or: [{status: essentialStatuses.Undetermined._id}, {status: essentialStatuses.Pending._id}], 
       // status: essentialStatuses.Undetermined._id
     }).sort('order').populate(populatePhase)
     if (!QSGDetails) throw new Error("Doesn't exist")
@@ -444,7 +445,8 @@ exports.setDeliveryPhaseAndDeliveryPhaseDetails = async (initiative, essentialSt
     deliveryPhaseDetails = await Phase.findOne({
       initiative: initiative._id, 
       has_violation: false,
-      $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
+      conformanceStatus: "Green",
+      // $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
       // status: essentialStatuses.Started._id,
     }).sort('order').populate(populatePhase)
     if (!deliveryPhaseDetails) throw new Error("Doesn't exist")

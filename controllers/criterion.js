@@ -66,7 +66,7 @@ exports.getCriterion = asyncHandler(async (req, res, next) => {
 // @route  PATCH /api/v1/criterion/:id
 // @access   Private
 exports.updateCriterion = asyncHandler(async (req, res, next) => {
-  const existingCriterion = await Criterion.findById(req.params.id)
+    const existingCriterion = await Criterion.findById(req.params.id)
   const gateCriteria = await Criterion.find({gate: existingCriterion.gate})
 
   try {

@@ -21,6 +21,10 @@ const Item = new mongoose.Schema({
     type: String,
     required: true,
   },
+  maxScore: {
+    type: Number,
+    required: true,
+  },
 })
 
 module.exports = mongoose.model("Item", Item);
