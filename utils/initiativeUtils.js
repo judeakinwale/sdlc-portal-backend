@@ -5,6 +5,7 @@ const Phase = require('../models/Phase')
 const Status = require('../models/Status')
 const Type = require('../models/Type')
 const {ErrorResponseJSON, SuccessResponseJSON} = require('../utils/errorResponse')
+const { updatePhaseData } = require('./calculateScore')
 
 
 exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
@@ -389,12 +390,17 @@ exports.relatedPhases = async (initiative, essentialStatuses) => {
       passScore: initiative.passScore,
       gate: gate._id,
       order: gate.order,
+      score: 0,
+      has_violation: true,
     }
     const getOrCreatePhase = await Phase.findOneAndUpdate(payload, {status: essentialStatuses.Pending._id}, {
       upsert: true,
       new: true,
       runValidators: true,
     })
+
+    await updatePhaseData(getOrCreatePhase)
+
     // console.log('initiative phases (gates) being created', getOrCreatePhase._id, "\n")
     relatedPhases.push(getOrCreatePhase)
   }))
@@ -425,9 +431,12 @@ exports.setQualityStageGateAndQualityStageGateDetails = async (initiative, essen
     QSGDetails = await Phase.findOne({
       initiative: initiative._id,
       order: 1, 
-    }).sort('order').populate(populatePhase)
+    }).sort('-order').populate(populatePhase)
   }
+  await updatePhaseData(QSGDetails);
+
   const QSG = await Gate.findById(QSGDetails.gate)
+  console.log({QSGDetails})
   console.log("qualityStageGateDetails, qualityStageGate : ", QSGDetails._id, QSG._id, "\n")
   return {QSG, QSGDetails}
 }
@@ -448,7 +457,7 @@ exports.setDeliveryPhaseAndDeliveryPhaseDetails = async (initiative, essentialSt
       conformanceStatus: "Green",
       // $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
       // status: essentialStatuses.Started._id,
-    }).sort('order').populate(populatePhase)
+    }).sort('-order').populate(populatePhase)
     if (!deliveryPhaseDetails) throw new Error("Doesn't exist")
   } catch(err) {
     console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values", "\n")
@@ -457,7 +466,10 @@ exports.setDeliveryPhaseAndDeliveryPhaseDetails = async (initiative, essentialSt
       order: 1, 
     }).sort('order').populate(populatePhase)
   }
+  await updatePhaseData(deliveryPhaseDetails);
+
   const deliveryPhase = await Gate.findById(deliveryPhaseDetails.gate)
+  console.log({deliveryPhaseDetails})
   console.log("qualityStageGateDetails, qualityStageGate : ", deliveryPhaseDetails._id, deliveryPhase._id, "\n")
   return {deliveryPhase, deliveryPhaseDetails}
 }
@@ -489,6 +501,8 @@ exports.setPhaseAndPhaseDetails = async (initiative, essentialStatuses) => {
       order: 1, 
     }).sort('order').populate(populatePhase)
   }
+  await updatePhaseData(phaseDetails);
+
   const phase = await Gate.findById(phaseDetails.gate)
   console.log("phaseDetails, phase : ", phaseDetails._id, phase._id, "\n")
   return {phase, phaseDetails}

@@ -8,7 +8,7 @@ const Prefix = require("../models/Prefix");
 const Response = require("../models/Response");
 const Status = require("../models/Status");
 const { ErrorResponse } = require("./errorResponse");
-const { essentialStatuses } = require("./initiativeUtils");
+// const { essentialStatuses } = require("./initiativeUtils");
 
 
 //// exports.allPhaseQPS = {} // likely to break
@@ -230,6 +230,25 @@ exports.maxPrefixScore = async () => {
 }
 
 
+// get or create statuses
+exports.essentialStatuses = async () => {
+  const getOrCreateStatus = async (title) => {
+    const status = await Status.findOneAndUpdate({title}, {}, {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    })
+    return status
+  }
+  return {
+    'Pending': await getOrCreateStatus('Pending'),
+    'Undetermined': await getOrCreateStatus('Undetermined'),
+    'Started': await getOrCreateStatus('Started'),
+    'Completed': await getOrCreateStatus('Completed'),
+  }
+}
+
+
 /**
  * @summary get Status for a phase using the score and passscore
  * @param {number} score 
@@ -266,8 +285,8 @@ exports.conformanceStatus = async initiative => {
  * @param {Response} response 
  * @returns {number} score
  */
-exports.getResponseScore = (response, maxPrefixScore) => {
-  if (!maxPrefixScore) maxPrefixScore = this.maxPrefixScore()
+exports.getResponseScore = async (response, maxPrefixScore) => {
+  if (!maxPrefixScore) maxPrefixScore = await this.maxPrefixScore()
   const responsePrefixScore = response?.prefix?.score
   const maxScore = response?.item?.maxScore
 
@@ -285,7 +304,7 @@ exports.getResponseScore = (response, maxPrefixScore) => {
 exports.checkPhaseViolations = async(phase, responses = undefined) => {
   if (!responses) responses = await Response.find({phase: phase._id}).populate("prefix")
   const foundResp = responses.find(resp => resp.prefix.score == 0)
-  if (foundResp) return true
+  if (foundResp || (phase?.conformanceStatus != "Green")) return true
   return false
 }
 
@@ -309,7 +328,7 @@ exports.calculatePhaseScore = async (initiativeId, phase, responses = undefined)
  * @returns {Status}
  */
 exports.setPhaseStatus = async (phase) => {
-  const {Started, Pending, Completed, Undetermined} = await essentialStatuses()
+  const {Started, Pending, Completed, Undetermined} = await this.essentialStatuses()
   if (!phase.has_violation && phase.score >= phase.passScore) return Completed._id
   if (!phase.has_violation && phase.score == 0) return Pending._id
   if (!phase.has_violation && phase.score < phase.passScore) return Started._id
@@ -342,7 +361,8 @@ exports.initiativePhaseQPS = async (initiative) => {
 
 exports.phaseQPS = async initiative => {
   try {
-    const responses = await this.initiativePhaseQPS(initiative)
+    // const responses = await this.initiativePhaseQPS(initiative)
+    const responses = await this.initiativePhaseQPSDepreciated(initiative)  // ? Older version
     return responses
   } catch (err) {
     throw new ErrorResponse(`Error updating QPS scores: ${err}`, 405)
@@ -368,3 +388,82 @@ exports.checkTotalItemScore = async(gateid, score, previousScore = 0) => {
 
   return totalScore
 }
+
+
+
+/**
+ * @summary (Depreciated) calculate criteria item response score. Is run when a response is created or modified
+ * @param {Response} response 
+ * @returns {number} score
+ */
+ exports.getPhaseAndCriteriaScore = async (response, maxPrefixScore) => {
+  if (!maxPrefixScore) maxPrefixScore = await this.maxPrefixScore()
+  response = response.populate("prefix criterion")
+
+  console.log({populatedResponses: response})
+
+  const responsePrefixScore = response?.prefix?.score
+  const criterionPercentage = response?.crierion?.percentage
+  const maxScore = (await Item.find({criterion: response?.crierion?._id}).length) * maxPrefixScore
+
+  const score = (responsePrefixScore / maxScore) * criterionPercentage
+  return score
+}
+
+exports.updatePhaseData = async phase => {
+  phase.conformanceStatus = await this.ragStatus(phase?.score, phase?.passScore)
+  phase.has_violation = await this.checkPhaseViolations(phase)
+  phase.status = await this.setPhaseStatus(phase)
+  await phase.save()
+  return phase
+}
+
+exports.initiativePhaseQPSDepreciated = async initiative => {
+
+  const phases = await Phase.find({initiative: initiative._id}).populate("status");
+  const maxPrefixScore = await this.maxPrefixScore()
+  let criterionScores = []
+  
+  // make forEach operation async
+  await Promise.all(await phases.map( async (phase) => {
+    const relatedCriteria = await Criterion.find({gate: phase.gate})
+
+    // add item to criterion scores list
+    relatedCriteria.forEach((cri) => {
+      const payload = {
+        phase: phase._id,
+        criterion: cri._id,
+        score: 0,
+      }
+      criterionScores.push(payload)
+    })
+    console.log({phase, relatedCriteria, criterionScores})
+
+    const responses = await Response.find({initiative: initiative._id, phase: phase._id}).populate("prefix")
+    await Promise.all(await responses.map( async(resp) => {
+      criterionScores = await Promise.all(await criterionScores.map( async(cS) => {
+        if (cS?.criterion == resp.criterion) {
+          const calculatedScore = await this.getPhaseAndCriteriaScore(resp, maxPrefixScore)
+          cS.score += Number(calculatedScore || 0)
+        }
+        return cS
+      }))
+    }))
+
+    const phaseScore = criterionScores.filter((cS) => cS.phase == phase._id).reduce((prev, curr) => (prev + Number(curr?.score)), 0)
+    console.log({updatedCriterionScores: criterionScores, phaseScore})
+
+    phase.score = phaseScore
+    // phase.score = await this.calculatePhaseScore(initiative._id, phase)
+    phase.conformanceStatus = this.ragStatus(phase.score, phase.passScore)
+    phase.has_violation = await this.checkPhaseViolations(phase)
+    phase.status = await this.setPhaseStatus()
+    await phase.save()
+    
+    console.log({updatedPhase: phase})
+  }))
+
+  // update initiative conformance status
+  const {initiative: updatedInitiative} = await this.conformanceStatus(initiative)
+  return updatedInitiative
+};
