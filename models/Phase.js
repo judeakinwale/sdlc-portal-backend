@@ -56,6 +56,15 @@ const Phase = new mongoose.Schema({
   score: {
     type: Number,
   },
+  passScore: {
+    type: Number,
+    default: 70
+  },
+  conformanceStatus: {
+    type: String,
+    enum: ["Red", "Amber", "Green"],
+    default: "Red",
+  },
   issues: {
     type: String,
   },

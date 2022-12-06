@@ -13,7 +13,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
     //create query string 
     let queryStr = JSON.stringify(reqQuery);
-// create operators ($gt, $gte)
+    // create operators ($gt, $gte)
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
     
     //finding resource
