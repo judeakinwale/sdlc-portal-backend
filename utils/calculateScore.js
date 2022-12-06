@@ -287,8 +287,8 @@ exports.conformanceStatus = async initiative => {
  */
 exports.getResponseScore = async (response, maxPrefixScore) => {
   if (!maxPrefixScore) maxPrefixScore = await this.maxPrefixScore()
-  const responsePrefixScore = response?.prefix?.score
-  const maxScore = response?.item?.maxScore
+  const responsePrefixScore = Number(response?.prefix?.score || 0)
+  const maxScore = Number(response?.item?.maxScore || 5)
 
   const score = (responsePrefixScore / maxPrefixScore) * maxScore
   return score

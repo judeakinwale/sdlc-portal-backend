@@ -23,6 +23,7 @@ const Item = new mongoose.Schema({
   },
   maxScore: {
     type: Number,
+    default: 5,
     required: true,
   },
 })
