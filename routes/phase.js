@@ -10,6 +10,6 @@ router.get("/", advancedResults(Phase, populatePhase), getAllPhases); // get all
 router.get("/:id", verifyToken, getPhase); // get phase details by id
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updatePhase); // update phase details by id
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deletePhase); // delete phase by id
-router.delete("/delete/all/phases", deleteAllPhases); // delete response by id
+router.delete("/delete/all/phases", verifyToken, authorize("HR", "Admin"), deleteAllPhases); // delete response by id
 
 module.exports = router;

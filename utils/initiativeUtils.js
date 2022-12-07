@@ -384,16 +384,19 @@ exports.relatedPhases = async (initiative, essentialStatuses) => {
 
   const relatedPhases = []
   await Promise.all(await relatedGates.map(async (gate) => {
-    const payload = {
+    const filterPayload = {
       initiative: initiative._id,
       initiativeType: initiativeTypeId,
-      passScore: initiative.passScore,
       gate: gate._id,
+    }
+    const updatePayload = {
+      passScore: initiative.passScore,
       order: gate.order,
       score: 0,
       has_violation: true,
+      status: essentialStatuses.Pending._id,
     }
-    const getOrCreatePhase = await Phase.findOneAndUpdate(payload, {status: essentialStatuses.Pending._id}, {
+    const getOrCreatePhase = await Phase.findOneAndUpdate(filterPayload, updatePayload, {
       upsert: true,
       new: true,
       runValidators: true,
