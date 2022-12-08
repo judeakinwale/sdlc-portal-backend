@@ -224,8 +224,10 @@ const { ErrorResponse } = require("./errorResponse");
  */
 exports.maxPrefixScore = async () => {
   const prefixes = await Prefix.find()
-  // const maxScore = Math.max.apply(Math, prefixes.map(p => p.score))
-  const maxScore = Math.max(prefixes.map(p => p.score))
+  const prefixScores = prefixes.map(p => p.score)
+  const maxScore = Math.max.apply(Math, prefixScores)
+  // const maxScore = Math.max(prefixScores)
+  // console.log({maxScore, prefixScores})
   return maxScore
 }
 
@@ -271,7 +273,7 @@ exports.conformanceStatus = async initiative => {
 
   const score = phases.reduce((prev, curr) => (prev + (Number(curr.score || 0) / phases.length)), 0)
   const status = this.ragStatus(score, initiative.passScore)
-  console.log("score, status:", score, status)
+  console.log({score, status})
   
   initiative.score = score
   initiative.conformanceStatus = status
@@ -287,10 +289,19 @@ exports.conformanceStatus = async initiative => {
  */
 exports.getResponseScore = async (response, maxPrefixScore) => {
   if (!maxPrefixScore) maxPrefixScore = await this.maxPrefixScore()
-  const responsePrefixScore = Number(response?.prefix?.score || 0)
-  const maxScore = Number(response?.item?.maxScore || 5)
+
+  let prefixScore = response?.prefix?.score
+  if (!prefixScore) prefixScore = (await Prefix.findById(response?.prefix)).score
+
+  const responseCriteriaItemMaxScore = (await Item.findById(response?.item))?.maxScore
+  const responsePrefixScore = Number(prefixScore || 0)
+  // const maxScore = Number(response?.item?.maxScore || 5)
+  const maxScore = Number(responseCriteriaItemMaxScore || 5)
 
   const score = (responsePrefixScore / maxPrefixScore) * maxScore
+
+  console.log({response})
+  console.log({maxPrefixScore, responsePrefixScore, maxScore, score})
   return score
 }
 
@@ -316,9 +327,12 @@ exports.checkPhaseViolations = async(phase, responses = undefined) => {
  * @returns {number} score
  */
 exports.calculatePhaseScore = async (initiativeId, phase, responses = undefined) => {
-  if (!(phase.initiative == initiativeId)) throw new ErrorResponse("Invalid initiative or phase: Phase score cannot be calculated", 400)
+  // console.log({initiativeId, phase: phase.initiative.toString(), isTrue: phase.initiative.toString() === initiativeId.toString()})
+  if (!(phase.initiative.toString() == initiativeId.toString())) throw new ErrorResponse("Invalid initiative or phase: Phase score cannot be calculated", 400)
   if (!responses) responses = await Response.find({initiative: initiativeId, phase: phase._id}).populate("prefix")
+  console.log({responses})
   const score = responses.reduce((prev, curr) => (prev + Number(curr?.score || 0)), 0)
+  console.log({score})
   return score
 }
 
@@ -342,9 +356,11 @@ exports.setPhaseStatus = async (phase) => {
  */
 exports.initiativePhaseQPS = async (initiative) => {
   const phases = await Phase.find({initiative: initiative._id}).populate("status");
+  // console.log({phases})
   // make forEach operation async
-  await new Promise.all(
-    phases.forEach( async (phase) => {
+  await Promise.all(
+    phases.map( async (phase) => {
+      console.log({phase})
       phase.score = await this.calculatePhaseScore(initiative._id, phase)
       phase.conformanceStatus = this.ragStatus(phase.score, phase.passScore)
       phase.has_violation = await this.checkPhaseViolations(phase)
@@ -361,8 +377,8 @@ exports.initiativePhaseQPS = async (initiative) => {
 
 exports.phaseQPS = async initiative => {
   try {
-    // const responses = await this.initiativePhaseQPS(initiative)
-    const responses = await this.initiativePhaseQPSDepreciated(initiative)  // ? Older version
+    const responses = await this.initiativePhaseQPS(initiative)
+    // const responses = await this.initiativePhaseQPSDepreciated(initiative)  // ? Older version
     return responses
   } catch (err) {
     throw new ErrorResponse(`Error updating QPS scores: ${err}`, 405)
@@ -437,13 +453,18 @@ exports.initiativePhaseQPSDepreciated = async initiative => {
       }
       criterionScores.push(payload)
     })
-    console.log({phase, relatedCriteria, criterionScores})
+    // console.log({phase, relatedCriteria, criterionScores})
+    // console.log({phase, relatedCriteriaLength: relatedCriteria.length, criterionScoresLength: criterionScores.length})
 
     const responses = await Response.find({initiative: initiative._id, phase: phase._id}).populate("prefix")
+    console.log({responses}, phase == "62476c81a167a2cb4b16ee48")
     await Promise.all(await responses.map( async(resp) => {
+      console.log({resp, responses})
       criterionScores = await Promise.all(await criterionScores.map( async(cS) => {
+        console.log({cS, resp})
         if (cS?.criterion == resp.criterion) {
           const calculatedScore = await this.getPhaseAndCriteriaScore(resp, maxPrefixScore)
+          console.log({calculatedScore})
           cS.score += Number(calculatedScore || 0)
         }
         return cS
@@ -451,16 +472,23 @@ exports.initiativePhaseQPSDepreciated = async initiative => {
     }))
 
     const phaseScore = criterionScores.filter((cS) => cS.phase == phase._id).reduce((prev, curr) => (prev + Number(curr?.score)), 0)
-    console.log({updatedCriterionScores: criterionScores, phaseScore})
+    // console.log({updatedCriterionScores: criterionScores, phaseScore})
+    console.log({updatedCriterionScoresLength: criterionScores.length, phaseScore})
+
+    // get phase once again to prevent weird errors
+    phase = await Phase.findById(phase._id)
 
     phase.score = phaseScore
     // phase.score = await this.calculatePhaseScore(initiative._id, phase)
     phase.conformanceStatus = this.ragStatus(phase.score, phase.passScore)
+    console.log({"phase conformanceStatus": phase.conformanceStatus})
     phase.has_violation = await this.checkPhaseViolations(phase)
-    phase.status = await this.setPhaseStatus()
+    console.log({"phase has_violation": phase.has_violation})
+    phase.status = await this.setPhaseStatus(phase)
+    console.log({"phase status": phase.status})
     await phase.save()
     
-    console.log({updatedPhase: phase})
+    console.log({updatedPhase: phase.score})
   }))
 
   // update initiative conformance status

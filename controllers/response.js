@@ -32,7 +32,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   req.body.gate = req.body.gate || criterion.gate
 
   // create phase if it doesn't exist
-  console.log(req.body.gate)
+  // console.log({"req.body.gate": req.body.gate})
   if (!req.body.phase) {
     console.log("req.body.phase not found")
     const initInitiative = await Initiative.findById(req.body.initiative)
@@ -102,7 +102,11 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   //   return new ErrorResponseJSON(res, "Response not created!", 404)
   // }
 
+  if (!("score" in req.body)) {
+    // 
+  }
   response.score = await getResponseScore(response)
+  // console.log({response})
 
   await response.save()
 
