@@ -379,7 +379,7 @@ exports.relatedPhases = async (initiative, essentialStatuses) => {
   if (!initiative.type) throw new Error("Invalid Initiative: has no type!")
   const initiativeTypeId = initiative.type._id ? initiative.type._id : initiative.type
 
-  const relatedPhase = await Phase.find(initiative.phase)
+  // const relatedPhase = await Phase.find(initiative.phase)
   const relatedGates = await Gate.find({initiativeType: initiativeTypeId})
   // console.log('relatedGates', relatedGates.map((r) => r._id), "\n")
 
