@@ -4,7 +4,7 @@ const Initiative = require("../models/Initiative")
 const Status = require("../models/Status")
 const Type = require("../models/Type")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
-const {filterQuerysetByQuerysetInstances} = require("../utils/updateDetails")
+const {filterQuerysetByQuerysetInstances, updateAllSchema} = require("../utils/updateDetails")
 
 
 // @desc    Get Initiatives By Status
@@ -43,5 +43,13 @@ exports.allInitiativesByType = asyncHandler(async (req, res, next) => {
 exports.getInitiative = asyncHandler(async (req, res, next) => {
   const logs = await Initiative.findById(req.params.id)
   return new SuccessResponseJSON(res, logs)
+})
+
+// @desc    Update All Schema
+// @route  GET /api/v1/log/update
+// @access   Private
+exports.updateSchema = asyncHandler(async (req, res, next) => {
+  await updateAllSchema()
+  return new SuccessResponseJSON(res, "All Related Schema Updated")
 })
 

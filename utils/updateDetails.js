@@ -1,38 +1,57 @@
 const asyncHandler = require("../middleware/async")
-// const Gate = require("../models/Gate")
-// const Type = require("../models/Type")
-// const Criterion = require("../models/Criterion")
+const Gate = require("../models/Gate")
+const Type = require("../models/Type")
+const Criterion = require("../models/Criterion")
+const Item = require("../models/Item")
 const {populateInitiative} = require("../controllers/initiative")
-// const Criterion = require("../models/Criterion")
-// const Item = require("../models/Item")
-// const Gate = require("../models/Gate")
+const Initiative = require("../models/Initiative")
 
 
 /**
  * Update the related parameters for all models
  * Also using model schema post save
  */
-// // Depreciated
-// exports.updateAllSchema = async () => {
+// Depreciated
+exports.updateAllSchema = async () => {
   
-//   const criteria = await Criterion.find()
-//   for (const [key, criterion] of Object.entries(criteria)) {
-//     let instance = await Criterion.findById(criterion.id)
-//     instance.save()
-//   }
-//   const gates = await Gate.find()
-//   for (const [key, gate] of Object.entries(gates)) {
-//     let instance = await Gate.findById(gate.id)
-//     instance.save()
-//   }
-//   const types = await Type.find()
-//   for (const [key, type] of Object.entries(types)) {
-//     let instance = await Type.findById(type.id)
-//     instance.save()
-//   }
-//   console.log("schema updated")
-//   return true
-// }
+  const items = await Item.find()
+  console.log("Items")
+  for (const [_key, item] of Object.entries(items)) {
+    let instance = await Item.findById(item.id)
+    console.log(instance._id)
+    instance.save()
+  }
+  const criteria = await Criterion.find()
+  console.log("Criteria")
+  for (const [_key, criterion] of Object.entries(criteria)) {
+    let instance = await Criterion.findById(criterion.id)
+    console.log(instance._id)
+    instance.save()
+  }
+  const gates = await Gate.find()
+  console.log("Gates")
+  for (const [_key, gate] of Object.entries(gates)) {
+    let instance = await Gate.findById(gate.id)
+    console.log(instance._id)
+    instance.save()
+  }
+  const types = await Type.find()
+  console.log("Types")
+  for (const [_key, type] of Object.entries(types)) {
+    let instance = await Type.findById(type.id)
+    console.log(instance._id)
+    instance.save()
+  }
+  const initiatives = await Initiative.find()
+  console.log("Initiatives")
+  for (const [_key, initiative] of Object.entries(initiatives)) {
+    let instance = await Initiative.findById(initiative.id)
+    console.log(instance._id)
+    instance.save()
+  }
+  console.log("schema updated")
+  return true
+}
 
 
 // // update criteria and criteria items with initiative type and gate
