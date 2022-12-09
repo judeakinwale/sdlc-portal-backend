@@ -85,7 +85,7 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
   // }
 
 
-  const response = await Response.findOneAndUpdate({
+  let response = await Response.findOneAndUpdate({
     initiative: req.body.initiative,
     phase: req.body.phase,
     criterion: req.body.criterion,
@@ -106,9 +106,9 @@ exports.createResponse = asyncHandler(async (req, res, next) => {
     // 
   }
   response.score = await getResponseScore(response)
-  // console.log({response})
-
-  await response.save()
+  
+  response = await response.save()
+  console.log({response: response._id, "response.score": response.score})
 
   const initiative = await Initiative.findById(response.initiative)
   await phaseQPS(initiative)

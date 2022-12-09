@@ -359,12 +359,16 @@ exports.initiativePhaseQPS = async (initiative) => {
   // console.log({phases})
   // make forEach operation async
   await Promise.all(
-    phases.map( async (phase) => {
-      console.log({phase})
+    phases.map( async (phase, index) => {
+      console.log({index, phase})
       phase.score = await this.calculatePhaseScore(initiative._id, phase)
+      console.log(1, phase.score)
       phase.conformanceStatus = this.ragStatus(phase.score, phase.passScore)
+      console.log(2)
       phase.has_violation = await this.checkPhaseViolations(phase)
-      phase.status = await this.setPhaseStatus()
+      console.log(3)
+      phase.status = await this.setPhaseStatus(phase)
+      console.log("got here")
       await phase.save()
     })
   )
