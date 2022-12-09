@@ -330,6 +330,7 @@ exports.calculatePhaseScore = async (initiativeId, phase, responses = undefined)
   // console.log({initiativeId, phase: phase.initiative.toString(), isTrue: phase.initiative.toString() === initiativeId.toString()})
   if (!(phase.initiative.toString() == initiativeId.toString())) throw new ErrorResponse("Invalid initiative or phase: Phase score cannot be calculated", 400)
   if (!responses) responses = await Response.find({initiative: initiativeId, phase: phase._id}).populate("prefix")
+  console.log({initiativeId, phase: phase._id})
   console.log({responses})
   const score = responses.reduce((prev, curr) => (prev + Number(curr?.score || 0)), 0)
   console.log({score})
@@ -360,7 +361,7 @@ exports.initiativePhaseQPS = async (initiative) => {
   // make forEach operation async
   await Promise.all(
     phases.map( async (phase, index) => {
-      console.log({index, phase})
+      console.log({index, initiative: initiative._id, phase: phase._id})
       phase.score = await this.calculatePhaseScore(initiative._id, phase)
       console.log(1, phase.score)
       phase.conformanceStatus = this.ragStatus(phase.score, phase.passScore)
@@ -370,6 +371,7 @@ exports.initiativePhaseQPS = async (initiative) => {
       phase.status = await this.setPhaseStatus(phase)
       console.log("got here")
       await phase.save()
+      console.log({phase})
     })
   )
 
