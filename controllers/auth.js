@@ -71,8 +71,9 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
       return res.status(201).cookie("token", token).json({
         success: true,
         token,
-        role: checkStaff.role
-      });
+        role: checkStaff.role,
+        _id: checkStaff._id,
+    });
     }
 
     const staffPhoto = new Photo({image: avatar});
@@ -87,7 +88,8 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
       success: true,
       msg: "Staff successfuly added",
       token,
-      role: newStaff.role
+      role: newStaff.role,
+      _id: newStaff._id,
       // data: newStaff,
     });
   } catch (err) {
