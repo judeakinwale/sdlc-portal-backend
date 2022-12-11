@@ -5,7 +5,7 @@ const Phase = require('../models/Phase')
 const Status = require('../models/Status')
 const Type = require('../models/Type')
 const {ErrorResponseJSON, SuccessResponseJSON} = require('../utils/errorResponse')
-const { updatePhaseData } = require('./calculateScore')
+const { updatePhaseData, phaseQPS } = require('./calculateScore')
 
 
 exports.populateInitiative = {path: "qualityAssuranceEngineer type qualityStageGate deliveryPhase phase status phases responses"}
@@ -539,6 +539,8 @@ exports.ensureValidInitiative = async (initiative) => {
   try {
     // get related phases
     const relatedPhases = await this.relatedPhases(initiative, essentialStatuses)
+
+    const tempQPS = await phaseQPS(initiative)
   
     // set quality stage gate and quality stage gate details
     const { QSG, QSGDetails } = await this.setQualityStageGateAndQualityStageGateDetails(initiative, essentialStatuses)

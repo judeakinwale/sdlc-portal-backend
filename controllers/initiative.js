@@ -59,7 +59,7 @@ exports.createInitiative = asyncHandler(async (req, res, next) => {
   // Create or update initiativeitem prefix
   const initiative = await createOrUpdateInitiative(req, res)
 
-  // Test calculating the QPS score
+  // Calculate the QPS score
   const tempQPS = await phaseQPS(initiative)
 
   // Get Conformance Status
@@ -108,8 +108,11 @@ exports.updateInitiative = asyncHandler(async (req, res, next) => {
   // Create or update initiative
   const initiative = await createOrUpdateInitiative(req, res)
 
-  // Test calculating the QPS score
-  // const tempQPS = await phaseQPS(initiative)
+  // Calculate the QPS score
+  const tempQPS = await phaseQPS(initiative)
+
+  // Get Conformance Status
+  const status = await conformanceStatus(initiative)
 
   await initiative.save()
 
