@@ -348,6 +348,7 @@ exports.setPhaseStatus = async (phase) => {
   if (!phase.has_violation && phase.score == 0) return Pending._id
   if (!phase.has_violation && phase.score < phase.passScore) return Started._id
   if (phase.has_violation && phase.score < phase.passScore) return Undetermined._id
+  return Started._id
 }
 
 /**
