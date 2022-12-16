@@ -403,13 +403,14 @@ exports.relatedPhases = async (initiative, essentialStatuses) => {
       runValidators: true,
     })
 
-    await updatePhaseData(getOrCreatePhase)
+    const finalPhase = await updatePhaseData(getOrCreatePhase)
 
     // console.log('initiative phases (gates) being created', getOrCreatePhase._id, "\n")
-    relatedPhases.push(getOrCreatePhase)
+    // relatedPhases.push(getOrCreatePhase)
+    relatedPhases.push(finalPhase)
   }))
   // console.log('relatedPhases', relatedPhases, "\n")
-  console.log('relatedPhases', relatedPhases.map((r) => r._id), "\n")
+  console.log('relatedPhases', relatedPhases.map((r) => [r._id, r.conformanceStatus]), "\n")
   return relatedPhases
 }
 
@@ -425,17 +426,18 @@ exports.setQualityStageGateAndQualityStageGateDetails = async (initiative, essen
   try {
     const possibleQSGs =  await Phase.find({
       initiative: initiative._id, 
-      has_violation: true, 
+      // has_violation: true, 
     }).sort('order').populate(populatePhase)
 
     possibleQSGs.forEach(qsg => {
       if (!qsg.gate) return
-      // console.log({order: qsg.order, DPexists: !!QSGDetails, hasScore: (qsg.score > 0), name: qsg.gate.title})
-      if (qsg.has_violation || qsg.score >= qsg.passScore) {
+      if (QSGDetails) return
+      console.log({order: qsg.order, DPexists: !!QSGDetails, has_violation: (qsg.has_violation), name: qsg.gate.title})
+      if (qsg.has_violation || qsg.score <= qsg.passScore || qsg.score == 0) {
         QSGDetails = qsg
         return
       }
-      if (!QSGDetails && qsg.score >= qsg.passScore) {
+      if (!QSGDetails && qsg.score >= qsg.passScore && qsg.order >= (possibleQSGs.length -1) ) {
         QSGDetails = qsg
         return
       }
