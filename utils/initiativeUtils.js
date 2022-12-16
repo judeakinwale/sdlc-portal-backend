@@ -423,12 +423,36 @@ exports.setQualityStageGateAndQualityStageGateDetails = async (initiative, essen
   const populatePhase = 'gate status'
   let QSGDetails
   try {
-    QSGDetails = await Phase.findOne({
+    const possibleQSGs =  await Phase.find({
       initiative: initiative._id, 
       has_violation: true, 
-      // $or: [{status: essentialStatuses.Undetermined._id}, {status: essentialStatuses.Pending._id}], 
-      // status: essentialStatuses.Undetermined._id
     }).sort('order').populate(populatePhase)
+
+    possibleQSGs.forEach(qsg => {
+      if (!qsg.gate) return
+      // console.log({order: qsg.order, DPexists: !!QSGDetails, hasScore: (qsg.score > 0), name: qsg.gate.title})
+      if (qsg.has_violation || qsg.score >= qsg.passScore) {
+        QSGDetails = qsg
+        return
+      }
+      if (!QSGDetails && qsg.score >= qsg.passScore) {
+        QSGDetails = qsg
+        return
+      }
+      // if (qsg.order > QSGDetails.order) {
+      //   QSGDetails = qsg
+      //   return
+      // }
+    })
+
+    // if (!QSGDetails) throw new Error("Doesn't exist")
+
+    // QSGDetails = await Phase.findOne({
+    //   initiative: initiative._id, 
+    //   has_violation: true, 
+    //   // $or: [{status: essentialStatuses.Undetermined._id}, {status: essentialStatuses.Pending._id}], 
+    //   // status: essentialStatuses.Undetermined._id
+    // }).sort('order').populate(populatePhase)
     if (!QSGDetails) throw new Error("Doesn't exist")
   } catch(err) {
     console.log("Quality Stage Gate details and Quality Stage Gate not found: ", err.message, ". Using default values", "\n")
@@ -455,13 +479,42 @@ exports.setDeliveryPhaseAndDeliveryPhaseDetails = async (initiative, essentialSt
   const populatePhase = 'gate status'
   let deliveryPhaseDetails
   try {
-    deliveryPhaseDetails = await Phase.findOne({
+    const possibleDPs = await Phase.find({
       initiative: initiative._id, 
-      has_violation: false,
-      conformanceStatus: "Green",
-      // $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
-      // status: essentialStatuses.Started._id,
+      // score: {$gte: 0}
+      // has_violation: false,
+      // conformanceStatus: "Green",
+      // // $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
+      // // status: essentialStatuses.Started._id,
     }).sort('-order').populate(populatePhase)
+
+    possibleDPs.forEach(dp => {
+      if (!dp.gate) return
+      // console.log({order: dp.order, DPexists: !!deliveryPhaseDetails, hasScore: (dp.score > 0), name: dp.gate.title})
+      if (deliveryPhaseDetails) return
+      if (!deliveryPhaseDetails && dp.score > 0) {
+        deliveryPhaseDetails = dp
+        return
+      }
+      // if (deliveryPhaseDetails
+      //   //  && dp.score > 0
+      //    ) {
+      //   // deliveryPhaseDetails = dp
+      //   return
+      // }
+      if (!deliveryPhaseDetails && dp.order == 1) {
+        deliveryPhaseDetails = dp
+        return
+      }
+    })
+    // deliveryPhaseDetails = await Phase.findOne({
+    //   initiative: initiative._id, 
+    //   score: {$gte: 0}
+    //   // has_violation: false,
+    //   // conformanceStatus: "Green",
+    //   // // $or: [{status: essentialStatuses.Started._id}, {status: essentialStatuses.Completed._id}], 
+    //   // // status: essentialStatuses.Started._id,
+    // }).sort('-order').populate(populatePhase)
     if (!deliveryPhaseDetails) throw new Error("Doesn't exist")
   } catch(err) {
     console.log("Delivery Phase details and Delivery Phase not found: ", err.message, ". Using default values", "\n")

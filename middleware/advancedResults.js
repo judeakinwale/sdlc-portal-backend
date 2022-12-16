@@ -1,4 +1,4 @@
-const advancedResults = (model, populate) => async (req, res, next) => {
+const advancedResults = (model, populate, sort) => async (req, res, next) => {
 
     let query;
 
@@ -28,6 +28,8 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     if(req.query.sort) {
         const sortBy = req.query.sort.split(',').join(' ');
         query= query.sort(sortBy);
+    }else if(sort) {
+        query= query.sort(sort);
     }else{
         query = query.sort('-createdAt')
     }
