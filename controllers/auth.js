@@ -44,8 +44,15 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
   // }
 
   try {
-    const photo = await axios(photoConfig); //get user data from active directory
-    const avatar = new Buffer.from(photo.data, "binary").toString("base64");
+    let photo = undefined
+    let avatar = undefined
+    try {
+      photo = await axios(photoConfig); //get user data from active directory
+      avatar = new Buffer.from(photo.data, "binary").toString("base64");
+    } catch (err) {
+      console.log(err.message)
+    }
+    console.log(1)
 
     const { data } = await axios(config); //get user data from active directory
 
@@ -60,13 +67,14 @@ exports.postUserDetails = asyncHandler(async (req, res, next) => {
 
     const checkStaff = await Staff.findOne({ email: mail }).populate("photo"); //check if there is a staff with the email in the db
     if (checkStaff) {
-      if (!checkStaff.photo || checkStaff.photo.image != avatar) {
+      if (avatar && !checkStaff.photo || checkStaff.photo.image != avatar) {
         const staffPhoto = new Photo({image: avatar});
         await staffPhoto.save()
 
         checkStaff.photo = staffPhoto.id;
         await checkStaff.save();
       }
+      console.log(2)
       const token = generateToken({ staff: checkStaff }); //generate token
       return res.status(201).cookie("token", token).json({
         success: true,
