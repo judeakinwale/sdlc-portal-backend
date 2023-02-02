@@ -6,6 +6,7 @@ const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse
 
 
 exports.populateCriterion = {path: "gate items initiativeType"}
+// exports.populateCriterion = {path: "items"};
 
 
 // @desc    Create Criterion
@@ -54,7 +55,7 @@ exports.getAllCriteria = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/criterion/:id
 // @access   Private
 exports.getCriterion = asyncHandler(async (req, res, next) => {
-  const criterion = await Criterion.findById(req.params.id).populate(this.populateCriterionDetails)
+  const criterion = await Criterion.findById(req.params.id).populate(this.populateCriterion);
   if (!criterion) {
     return new ErrorResponseJSON(res, "Criterion not found!", 404)
   }

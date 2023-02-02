@@ -83,8 +83,8 @@ const Initiative = new mongoose.Schema({
   },
 },
 {
-  toJSON: {virtuals: true},
-  toObject: {virtuals: true},
+  // toJSON: {virtuals: true},
+  // toObject: {virtuals: true},
 });
 
 Initiative.pre("remove", async function (next) {

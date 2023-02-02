@@ -4,7 +4,8 @@ const Phase = require("../models/Phase")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
-exports.populatePhase = {path: "initiative initiativeType gate status responses"}
+// exports.populatePhase = {path: "initiative initiativeType gate status responses"}
+exports.populatePhase = {path: "status gate"}
 
 
 // @desc    Create Phase

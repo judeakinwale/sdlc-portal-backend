@@ -43,6 +43,14 @@ Criterion.virtual("items", {
   localField: "_id",
   foreignField: "criterion",
   justOne: false,
-});
+})
+// .get( async function() {
+//   return await this.model("Item").find({ criterion: this._id });
+//   // console.log({items})
+// })
+// .set( async function() {
+//   const items = await this.model("Item").find({ criterion: this._id });
+//   return items
+// });
 
 module.exports = mongoose.model("Criterion", Criterion);

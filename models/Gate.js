@@ -45,6 +45,16 @@ Gate.virtual("criteria", {
   localField: "_id",
   foreignField: "gate",
   justOne: false,
-});
+})
+// .get( async function() {
+//   return await this.model("Item").find({gate: this._id});
+//   // console.log({items})
+// });
+
+// // Reverse Populate with Virtuals
+// Gate.virtual("criteria").get( async function() {
+//   return await this.model("Item").find({gate: this._id});
+//   // console.log({items})
+// });
 
 module.exports = mongoose.model("Gate", Gate);

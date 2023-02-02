@@ -15,43 +15,89 @@ const Initiative = require("../models/Initiative")
 exports.updateAllSchema = async () => {
   
   const items = await Item.find()
-  console.log("Items")
+  console.log("\nItems")
   for (const [_key, item] of Object.entries(items)) {
-    let instance = await Item.findById(item.id)
+    let instance = await Item.findByIdAndUpdate(item.id, {})
     console.log(instance._id)
     instance.save()
   }
   const criteria = await Criterion.find()
-  console.log("Criteria")
+  console.log("\nCriteria")
   for (const [_key, criterion] of Object.entries(criteria)) {
-    let instance = await Criterion.findById(criterion.id)
+    let instance = await Criterion.findByIdAndUpdate(criterion.id, {})
     console.log(instance._id)
     instance.save()
   }
   const gates = await Gate.find()
-  console.log("Gates")
+  console.log("\nGates")
   for (const [_key, gate] of Object.entries(gates)) {
-    let instance = await Gate.findById(gate.id)
+    let instance = await Gate.findByIdAndUpdate(gate.id, {})
     console.log(instance._id)
     instance.save()
   }
   const types = await Type.find()
-  console.log("Types")
+  console.log("\nTypes")
   for (const [_key, type] of Object.entries(types)) {
-    let instance = await Type.findById(type.id)
+    let instance = await Type.findByIdAndUpdate(type.id, {})
     console.log(instance._id)
     instance.save()
   }
   const initiatives = await Initiative.find()
-  console.log("Initiatives")
+  console.log("\nInitiatives")
   for (const [_key, initiative] of Object.entries(initiatives)) {
-    let instance = await Initiative.findById(initiative.id)
-    console.log(instance._id)
-    instance.save()
+    let instance = await Initiative.findByIdAndUpdate(initiative.id, {})
+    if (instance.serialNumber) {
+      console.log(instance._id)
+      instance.save()
+    }
   }
-  console.log("schema updated")
+  console.log("\nschema updated")
   return true
 }
+
+
+exports.reverseUpdateAllSchema = async () => {
+  
+  // const initiatives = await Initiative.find();
+  // console.log("\nInitiatives");
+  // for (const [_key, initiative] of Object.entries(initiatives)) {
+  //   let instance = await Initiative.findById(initiative.id);
+  //   if (instance.serialNumber) {
+  //     console.log(instance._id);
+  //     instance.save();
+  //   }
+  // }
+  const types = await Type.find();
+  console.log("\nTypes");
+  for (const [_key, type] of Object.entries(types)) {
+    let instance = await Type.findById(type.id);
+    console.log(instance._id);
+    instance.save();
+  }
+  // const gates = await Gate.find();
+  // console.log("\nGates");
+  // for (const [_key, gate] of Object.entries(gates)) {
+  //   let instance = await Gate.findById(gate.id);
+  //   console.log(instance._id);
+  //   instance.save();
+  // }
+  // const criteria = await Criterion.find();
+  // console.log("\nCriteria");
+  // for (const [_key, criterion] of Object.entries(criteria)) {
+  //   let instance = await Criterion.findById(criterion.id);
+  //   console.log(instance._id);
+  //   instance.save();
+  // }
+  // const items = await Item.find();
+  // console.log("\nItems");
+  // for (const [_key, item] of Object.entries(items)) {
+  //   let instance = await Item.findById(item.id);
+  //   console.log(instance._id);
+  //   instance.save();
+  // }
+  console.log("\nschema updated");
+  return true;
+};
 
 
 // // update criteria and criteria items with initiative type and gate

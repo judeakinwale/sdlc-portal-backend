@@ -5,9 +5,11 @@ const Gate = require("../models/Gate")
 const Item = require("../models/Item")
 const { checkTotalItemScore } = require("../utils/calculateScore")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+const { updateAllSchema, reverseUpdateAllSchema } = require("../utils/updateDetails")
 
 
-exports.populateItem = {path: "criterion initiativeType gate"}
+// exports.populateItem = {path: "criterion initiativeType gate"}
+exports.populateItem = {path: ""}
 
 
 // @desc    Create Criterion Item
@@ -45,6 +47,8 @@ exports.createItem = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/item
 // @access   Public
 exports.getAllItems = asyncHandler(async (req, res, next) => {
+  // updateAllSchema()
+  // // reverseUpdateAllSchema()
   return res.status(200).json(res.advancedResults)
 })
 

@@ -2,9 +2,11 @@
 const asyncHandler = require("../middleware/async")
 const Type = require("../models/Type")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+const { updateTypes } = require("../utils/updateResponses")
 
 
-exports.popoulateType = {path: "gates phases"}
+// exports.populateType = {path: "gates phases"}
+exports.populateType = {path: "phases"}
 
 
 // @desc    Create Initiative Type
@@ -28,7 +30,11 @@ exports.createType = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/type
 // @access   Private
 exports.getAllTypes = asyncHandler(async (req, res, next) => {
-  return res.status(200).json(res.advancedResults)
+  // return res.status(200).json(res.advancedResults)
+  const results = res.advancedResults;
+  const types = await updateTypes(results.data);
+  results.data = types;
+  return res.status(200).json(results);
 })
 
 
@@ -36,7 +42,7 @@ exports.getAllTypes = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/type/:id
 // @access   Private
 exports.getType = asyncHandler(async (req, res, next) => {
-    const type = await Type.findById(req.params.id)
+    const type = await Type.findById(req.params.id).populate(this.populateType)
     if (!type) {
       return new ErrorResponseJSON(res, "Type not found!", 404)
     }

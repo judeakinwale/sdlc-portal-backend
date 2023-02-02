@@ -7,7 +7,7 @@ const advancedResults = require("../middleware/advancedResults");
 
 router.post("/", verifyToken, authorize("HR", "Admin", "Manager"), createGate); // create a gate
 router.get("/", advancedResults(Gate, populateGate), getAllGates); // get all gates
-router.get("/:id", verifyToken, getGate); // get gate details by id
+router.get("/:id", getGate); // get gate details by id
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updateGate); // update gate details by id
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deleteGate); // delete gate by id
 

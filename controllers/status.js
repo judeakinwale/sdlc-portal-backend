@@ -5,7 +5,7 @@ const {titleCase} = require("../utils/updateDetails")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
 
 
-// exports.populateStatus = {path: "phases initiatives"}
+exports.populateStatus = {path: "phases initiatives"}
 
 
 // @desc    Create Status
@@ -39,7 +39,7 @@ exports.getAllStatuss = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/status/:id
 // @access   Private
 exports.getStatus = asyncHandler(async (req, res, next) => {
-  const status = await Status.findById(req.params.id)
+  const status = await Status.findById(req.params.id).populate(this.populateStatus)
   if (!status) {
     return new ErrorResponseJSON(res, "Status not found!", 404)
   }

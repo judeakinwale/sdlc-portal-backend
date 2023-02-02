@@ -7,7 +7,7 @@ const advancedResults = require("../middleware/advancedResults");
 
 router.post("/", verifyToken, authorize("HR", "Admin", "Manager"), createStatus); // create a status
 router.get("/", advancedResults(Status), getAllStatuss); // get all statuses
-router.get("/:id", verifyToken, getStatus); // get status details by id
+router.get("/:id", getStatus); // get status details by id
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updateStatus); // update status details by id
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deleteStatus); // delete status by id
 

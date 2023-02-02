@@ -2,9 +2,11 @@
 const asyncHandler = require("../middleware/async")
 const Gate = require("../models/Gate")
 const {ErrorResponseJSON, SuccessResponseJSON} = require("../utils/errorResponse")
+const { updateGates } = require("../utils/updateResponses")
 
 
-exports.populateGate = {path: "initiativeType criteria"}
+// exports.populateGate = {path: "initiativeType criteria"}
+// exports.populateGate = {path: "criteria"}
 
 
 // @desc    Create Gate
@@ -29,7 +31,11 @@ exports.createGate = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/gate
 // @access   Private
 exports.getAllGates = asyncHandler(async (req, res, next) => {
-  return res.status(200).json(res.advancedResults)
+  // return res.status(200).json(res.advancedResults)
+  const results = res.advancedResults
+  const gates = await updateGates(results.data)
+  results.data = gates
+  return res.status(200).json(results);
 })
 
 
@@ -37,7 +43,7 @@ exports.getAllGates = asyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/gate/:id
 // @access   Private
 exports.getGate = asyncHandler(async (req, res, next) => {
-  const gate = await Gate.findById(req.params.id).populate('initiativeType')
+  const gate = await Gate.findById(req.params.id).populate(this.populateGate);
   if (!gate) {
     return new ErrorResponseJSON(res, "Gate not found!", 404)
   }

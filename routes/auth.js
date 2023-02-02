@@ -28,7 +28,7 @@ router.patch("/documents", verifyToken, upload.array("documents", 5), uploadDocu
 // router.get("/all", verifyToken, authorize("HR", "Admin", "Manager"), advancedResults(Staff), getAllStaff); //get all staff
 router.get("/all", advancedResults(Staff), getAllStaff); //get all staff //TODO: Delete this line
 // router.get("/db/update", updateRelations); // update database relations // depreciated
-router.get("/:id", verifyToken, authorize("HR", "Admin", "Manager"), getStaff); //get a user
+router.get("/:id", authorize("HR", "Admin", "Manager"), getStaff); //get a user
 router.patch("/:id", verifyToken, authorize("HR", "Admin", "Manager"), updateStaff); //update a user
 router.delete("/:id", verifyToken, authorize("HR", "Admin", "Manager"), deleteStaff); //delete a user
 
